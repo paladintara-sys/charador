@@ -3,68 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Чарадор</title>
+    <title>Чарадор: Наследие</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Old+Standard+TT:italic,wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Marck+Script&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&display=swap');
         
         :root {
             --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+            --celtic-gold: #d4af37;
         }
 
         body { 
-            background-color: #0c0a09; 
+            background-color: #080707; 
             margin: 0; padding: 0; 
-            color: #e7e5e4; 
+            color: #f5f5f4; 
             font-family: 'Old Standard TT', serif;
             overscroll-behavior: none;
+            overflow: hidden;
         }
-
-        /* Кастомный скроллбар */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(217, 119, 6, 0.3); border-radius: 10px; }
 
         .game-container {
             display: flex;
             flex-direction: column;
             height: 100vh;
             height: -webkit-fill-available;
-            overflow: hidden;
+            position: relative;
         }
 
         .scroll-area {
             flex: 1;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            padding-bottom: calc(2rem + var(--safe-area-inset-bottom));
+            padding-bottom: calc(4rem + var(--safe-area-inset-bottom));
+            background: linear-gradient(to bottom, transparent, #0c0a09 20%);
         }
 
-        .glass-card {
-            background: rgba(18, 14, 12, 0.9);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255, 215, 0, 0.1);
-        }
-
-        .status-bar-fill { transition: width 0.5s ease-out; }
-        
-        .image-container {
-            height: 45vh;
-            min-height: 280px;
+        .ornament-border {
             position: relative;
-            flex-shrink: 0;
+            border: 2px solid var(--celtic-gold);
+            padding: 20px;
+            margin: 10px;
+            background: rgba(18, 14, 12, 0.95);
+            box-shadow: inset 0 0 20px rgba(212, 175, 55, 0.1);
         }
 
-        .img-mask {
+        .celtic-corner {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 120px;
-            background: linear-gradient(to top, #0c0a09 0%, transparent 100%);
+            width: 40px;
+            height: 40px;
+            fill: var(--celtic-gold);
+            opacity: 0.6;
+        }
+
+        .stat-glow-hp { filter: drop-shadow(0 0 8px #ef4444); }
+        .stat-glow-mp { filter: drop-shadow(0 0 8px #3b82f6); }
+
+        .choice-btn {
+            background: linear-gradient(135deg, #1c1917 0%, #0c0a09 100%);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .choice-btn:active {
+            transform: scale(0.98);
+            border-color: var(--celtic-gold);
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .image-frame {
+            height: 40vh;
+            min-height: 300px;
+            width: 100%;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .hand-drawn-filter {
+            filter: contrast(1.1) saturate(1.2);
         }
     </style>
 </head>
@@ -72,39 +91,46 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { Heart, Zap, Volume2, VolumeX, ArrowRight, Loader2, Feather, Music } = {
+        const { Heart, Sparkles, Volume2, VolumeX, ChevronRight, Skull, ShieldCheck } = {
             Heart: ({className}) => <svg className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>,
-            Zap: ({className}) => <svg className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>,
+            Sparkles: ({className}) => <svg className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L9 9l-8 3 8 3 3 8 3-8 8-3-8-3-3-8z"/></svg>,
             Volume2: ({className}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>,
             VolumeX: ({className}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line></svg>,
-            ArrowRight: ({className}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>,
-            Loader2: ({className}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>,
-            Feather: ({className}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line><line x1="17.5" y1="15" x2="9" y2="15"></line></svg>,
-            Music: ({className}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+            ChevronRight: ({className}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>,
+            Skull: ({className}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 10L9.01 10M15 10L15.01 10M12 2C6.48 2 2 6.48 2 12C2 14.59 3.02 16.94 4.65 18.73L4.65 22L8 22L8 20L16 20L16 22L19.35 22L19.35 18.73C20.98 16.94 22 14.59 22 12C22 6.48 17.52 2 12 2Z"/></svg>,
+            ShieldCheck: ({className}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
         };
+
+        const CelticCorner = ({className}) => (
+            <svg viewBox="0 0 100 100" className={className}>
+                <path d="M0,0 L100,0 L100,10 L10,10 L10,100 L0,100 Z M30,30 L70,30 L70,40 L40,40 L40,70 L30,70 Z" />
+            </svg>
+        );
 
         const { useState, useEffect, useRef } = React;
 
         const STORY_DATA = [
             {
-                title: "Глава I: Прощание",
-                text: "Ветер колышет подол твоего платья. Ты стоишь на краю деревни. В футляре за спиной — Флейта Рассвета. Путь в Чарадор опасен, но музыка не может ждать.",
-                prompt: "Beautiful anime landscape, a young girl from behind looking at a dark magical forest in distance, cinematic sunset, Ghibli style, detailed clouds, high fantasy",
+                id: 'prologue',
+                title: "На грани миров",
+                text: "Холод Белогорья кусает пальцы. Вы с Бермяшем стоите на развилке. Впереди — Смерги, тени, пожирающие души. Позади — тлеющие угли дома. Флейта Латар в ваших руках дрожит. Нужно решить: потратить магию на защитный купол для двоих или рвануть сквозь тени, рискуя плотью, но сохраняя силы для будущего боя?",
+                prompt: "Hand-drawn anime fantasy art, Studio Ghibli style, a small traveler and a loyal companion at a snowy mountain crossroad, dark ghostly shadows looming in background, cinematic composition, intricate details, watercolor textures",
                 options: [
-                    { text: "Сыграть прощальную песню", cost: { mana: 15 }, next: 1 },
-                    { text: "Уйти молча, беречь силы", cost: { health: 5 }, next: 1 }
+                    { text: "Создать барьер (Защитить Бермяша)", cost: { mp: 30 }, next: 'forest_safe', label: "Магия" },
+                    { text: "Бежать сквозь мрак (Рискнуть собой)", cost: { hp: 25 }, next: 'forest_hurt', label: "Жертва" }
                 ]
             },
             {
-                title: "Шепот Леса",
-                text: "Деревья здесь имеют глаза. Бермяш испуганно жмется к твоим ногам. Тени сгущаются.",
-                prompt: "Spooky dark fantasy forest, glowing eyes in bushes, gnarled ancient trees, cinematic low angle, moody lighting",
+                id: 'forest_safe',
+                title: "Шепот Древних",
+                text: "Барьер мерцает, отражая когти теней. Бермяш благодарен, его взгляд спокоен. Но мана почти на исходе. Впереди — мост, который охраняет Лесной Страж. Он требует плату за проход: либо вы отдадите ему Флейту, либо сразитесь в ослабленном состоянии. Потеря флейты — это потеря цели, но смерть — это конец пути.",
+                prompt: "Hand-drawn fantasy anime illustration, a mystical forest bridge with a giant mossy stone guardian, soft magical glow, lush ancient trees, detailed hand-painted textures",
                 options: [
-                    { text: "Осветить путь мелодией", cost: { mana: 20 }, next: 2 },
-                    { text: "Пробираться сквозь тернии", cost: { health: 15 }, next: 2 }
+                    { text: "Вступить в бой без магии", cost: { hp: 40 }, next: 'victory', label: "Отчаяние" },
+                    { text: "Попробовать обмануть Стража", cost: { mp: 10 }, next: 'failure', label: "Риск" }
                 ]
-            }
-            // Можно добавить остальные главы позже
+            },
+            // Дополнительные ветки можно расширять здесь
         ];
 
         const App = () => {
@@ -116,9 +142,10 @@
             const [isMuted, setIsMuted] = useState(false);
             
             const audioRef = useRef(null);
+            const AUDIO_FILE = "Slow_Water_Over_Stone.mp3";
 
             const generateArt = async (prompt) => {
-                const apiKey = ""; // API ключ подставится автоматически
+                const apiKey = ""; 
                 if (!apiKey) return;
                 setLoadingImg(true);
                 try {
@@ -147,8 +174,8 @@
             };
 
             const handleOption = (opt) => {
-                const newHp = Math.max(0, stats.hp - (opt.cost?.health || 0));
-                const newMp = Math.max(0, stats.mp - (opt.cost?.mana || 0));
+                const newHp = Math.max(0, stats.hp - (opt.cost?.hp || 0));
+                const newMp = Math.max(0, stats.mp - (opt.cost?.mp || 0));
                 setStats({ hp: newHp, mp: newMp });
                 
                 if (newHp <= 0) setScene('gameover');
@@ -157,21 +184,29 @@
             };
 
             if (scene === 'intro') return (
-                <div className="h-screen bg-[#0c0a09] flex flex-col items-center justify-center p-6 text-center">
-                    <Feather className="w-12 h-12 text-amber-600 mb-4 animate-pulse" />
-                    <h1 className="text-5xl font-bold tracking-tighter text-amber-50 mb-2">ЧАРАДОР</h1>
-                    <p className="text-amber-800 text-xs uppercase tracking-[0.3em] mb-12">Наследница Флейты</p>
-                    <button onClick={startPlaying} className="w-full max-w-xs py-4 bg-amber-700 text-black rounded-xl font-bold uppercase tracking-widest shadow-lg active:scale-95 transition-transform">
-                        Начать путь
+                <div className="h-screen bg-[#080707] flex flex-col items-center justify-between p-12 text-center border-4 border-[#d4af37]/20 m-2 rounded-3xl">
+                    <div className="mt-12">
+                        <div className="w-24 h-24 mx-auto mb-6 relative">
+                            <Sparkles className="w-full h-full text-amber-500 animate-pulse" />
+                            <div className="absolute inset-0 bg-amber-500/20 blur-xl rounded-full"></div>
+                        </div>
+                        <h1 className="text-6xl font-bold tracking-tighter text-amber-50 uppercase mb-4" style={{fontFamily: 'Old Standard TT'}}>Чарадор</h1>
+                        <p className="text-amber-600 text-sm uppercase tracking-[0.5em] italic">Наследие Флейты</p>
+                    </div>
+                    
+                    <button onClick={startPlaying} className="w-full py-6 choice-btn rounded-2xl font-bold uppercase tracking-widest text-amber-100 shadow-[0_0_30px_rgba(212,175,55,0.15)] active:scale-95 transition-all">
+                        Войти в легенду
                     </button>
-                    <audio ref={audioRef} src="1-2 Начало пути. Прощание с домом.mp3" loop />
+                    <audio ref={audioRef} src={AUDIO_FILE} loop />
                 </div>
             );
 
             if (scene === 'gameover') return (
-                <div className="h-screen bg-black flex flex-col items-center justify-center p-6 text-center">
-                    <h2 className="text-4xl font-bold text-red-900 mb-4">МУЗЫКА СМОЛКЛА</h2>
-                    <button onClick={() => window.location.reload()} className="text-stone-500 underline uppercase text-xs">Попробовать снова</button>
+                <div className="h-screen bg-black flex flex-col items-center justify-center p-8 text-center">
+                    <Skull className="w-20 h-20 text-red-900 mb-6" />
+                    <h2 className="text-4xl font-bold text-red-700 uppercase mb-4">Ваша песнь оборвалась</h2>
+                    <p className="text-stone-500 mb-8 italic">Чарадор поглощен тишиной...</p>
+                    <button onClick={() => window.location.reload()} className="px-8 py-3 border border-stone-800 rounded-full text-stone-400 uppercase text-xs tracking-widest">Переродиться</button>
                 </div>
             );
 
@@ -179,63 +214,82 @@
 
             return (
                 <div className="game-container">
-                    <audio ref={audioRef} src="1-2 Начало пути. Прощание с домом.mp3" loop />
+                    <audio ref={audioRef} src={AUDIO_FILE} loop />
                     
-                    {/* Арт */}
-                    <div className="image-container">
+                    <div className="image-frame">
                         {loadingImg ? (
-                            <div className="absolute inset-0 flex items-center justify-center bg-stone-900">
-                                <Loader2 className="w-8 h-8 text-amber-700" />
+                            <div className="absolute inset-0 flex items-center justify-center bg-stone-950">
+                                <div className="flex flex-col items-center gap-4">
+                                    <div className="w-12 h-12 border-2 border-amber-500/20 border-t-amber-500 rounded-full animate-spin"></div>
+                                    <span className="text-[10px] uppercase tracking-widest text-amber-900">Пробуждение видения...</span>
+                                </div>
                             </div>
                         ) : (
-                            <img src={image || "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&q=80&w=1000"} className="w-full h-full object-cover" />
+                            <img src={image || "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000"} className="w-full h-full object-cover hand-drawn-filter" alt="vision" />
                         )}
-                        <div className="img-mask" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0c0a09] via-transparent to-black/40" />
                         
-                        {/* Статы поверх арта */}
-                        <div className="absolute top-10 left-4 right-4 flex justify-between items-center">
-                            <div className="flex gap-2">
-                                <div className="bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 flex items-center gap-2">
-                                    <Heart className="w-3 h-3 text-red-500" />
-                                    <span className="text-xs font-bold">{stats.hp}</span>
+                        {/* Stats Bar */}
+                        <div className="absolute top-12 left-4 right-4 flex justify-between items-center z-10">
+                            <div className="flex flex-col gap-3">
+                                <div className="flex items-center gap-3 group">
+                                    <div className="p-2 rounded-lg bg-black/60 border border-red-500/30 stat-glow-hp transition-all">
+                                        <Heart className="w-4 h-4 text-red-500" />
+                                    </div>
+                                    <div className="h-2 w-24 bg-stone-900 rounded-full border border-white/5 overflow-hidden">
+                                        <div className="h-full bg-red-600 transition-all duration-500" style={{width: `${stats.hp}%`}} />
+                                    </div>
                                 </div>
-                                <div className="bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 flex items-center gap-2">
-                                    <Zap className="w-3 h-3 text-blue-400" />
-                                    <span className="text-xs font-bold">{stats.mp}</span>
+                                <div className="flex items-center gap-3 group">
+                                    <div className="p-2 rounded-lg bg-black/60 border border-blue-500/30 stat-glow-mp transition-all">
+                                        <Sparkles className="w-4 h-4 text-blue-500" />
+                                    </div>
+                                    <div className="h-2 w-24 bg-stone-900 rounded-full border border-white/5 overflow-hidden">
+                                        <div className="h-full bg-blue-600 transition-all duration-500" style={{width: `${stats.mp}%`}} />
+                                    </div>
                                 </div>
                             </div>
-                            <button onClick={() => { if(audioRef.current) audioRef.current.muted = !isMuted; setIsMuted(!isMuted); }} className="p-2 bg-black/40 backdrop-blur-md rounded-full border border-white/10">
-                                {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                            <button onClick={() => { if(audioRef.current) audioRef.current.muted = !isMuted; setIsMuted(!isMuted); }} className="p-3 bg-black/60 rounded-xl border border-white/10 backdrop-blur-md">
+                                {isMuted ? <VolumeX className="w-5 h-5 text-white" /> : <Volume2 className="w-5 h-5 text-white" />}
                             </button>
                         </div>
                     </div>
 
-                    {/* Контент с прокруткой */}
-                    <div className="scroll-area glass-card">
-                        <div className="p-6 pt-2">
-                            <div className="mb-6">
+                    <div className="scroll-area">
+                        <div className="ornament-border">
+                            <CelticCorner className="celtic-corner top-0 left-0" />
+                            <CelticCorner className="celtic-corner top-0 right-0 rotate-90" />
+                            <CelticCorner className="celtic-corner bottom-0 left-0 -rotate-90" />
+                            <CelticCorner className="celtic-corner bottom-0 right-0 rotate-180" />
+                            
+                            <div className="mb-4 text-center">
                                 <span className="text-[10px] text-amber-600 font-bold uppercase tracking-[0.4em]">{current.title}</span>
-                                <p className="text-xl md:text-2xl mt-2 leading-relaxed text-stone-200 italic font-serif">
-                                    «{current.text}»
-                                </p>
                             </div>
+                            
+                            <p className="text-lg md:text-xl leading-relaxed text-stone-200 italic font-serif text-center px-2 mb-8">
+                                «{current.text}»
+                            </p>
 
-                            <div className="space-y-3">
+                            <div className="space-y-4">
                                 {current.options.map((opt, i) => (
                                     <button 
                                         key={i} 
                                         onClick={() => handleOption(opt)}
-                                        className="w-full p-5 bg-stone-900/50 border border-white/5 rounded-2xl text-left flex items-center justify-between group active:bg-amber-900/20 transition-colors"
+                                        className="w-full p-6 choice-btn rounded-xl text-left relative overflow-hidden group"
                                     >
-                                        <div>
-                                            <div className="text-amber-100 group-hover:text-amber-400 transition-colors">{opt.text}</div>
-                                            {(opt.cost) && (
-                                                <div className="text-[9px] uppercase tracking-widest text-stone-500 mt-1">
-                                                    {opt.cost.mana ? `Расход маны: ${opt.cost.mana}` : `Расход здоровья: ${opt.cost.health}`}
+                                        <div className="relative z-10">
+                                            <div className="flex items-center justify-between mb-1">
+                                                <span className="text-[10px] text-amber-700 font-bold uppercase tracking-widest">{opt.label}</span>
+                                                <ChevronRight className="w-4 h-4 text-amber-900 group-hover:text-amber-500 transition-colors" />
+                                            </div>
+                                            <div className="text-amber-100 group-hover:text-white transition-colors pr-8 leading-tight">{opt.text}</div>
+                                            {opt.cost && (
+                                                <div className="flex gap-4 mt-2">
+                                                    {opt.cost.hp && <span className="text-[10px] text-red-500/70 uppercase">Кровь: -{opt.cost.hp}</span>}
+                                                    {opt.cost.mp && <span className="text-[10px] text-blue-500/70 uppercase">Дух: -{opt.cost.mp}</span>}
                                                 </div>
                                             )}
                                         </div>
-                                        <ArrowRight className="w-4 h-4 text-stone-700" />
                                     </button>
                                 ))}
                             </div>
