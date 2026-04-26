@@ -6,31 +6,31 @@
     <title>Чарадор: Наследница флейты</title>
     <!-- Подключаем Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Подключаем React и Tailwind для стилей -->
+    <!-- Подключаем библиотеки -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Old+Standard+TT:italic,wght@400;700&display=swap');
-        body { background-color: #0c0a09; margin: 0; padding: 0; overflow-x: hidden; color: #e7e5e4; }
-        .font-serif { font-family: 'Old Standard TT', serif; }
-        .scene-enter { animation: fadeIn 0.8s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        body { background-color: #0c0a09; margin: 0; padding: 0; overflow-x: hidden; color: #e7e5e4; font-family: 'Old Standard TT', serif; }
+        .scene-enter { animation: fadeIn 1s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        .resonance-glow { box-shadow: 0 0 20px rgba(245, 158, 11, 0.3); }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
     <script type="text/babel">
-        const { Music, Heart, ArrowRight, Sparkles, Send, Shield, Moon } = {
+        const { Music, Heart, ArrowRight, Sparkles, Wind, Shield, Stars } = {
             Music: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>,
             Heart: ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>,
             ArrowRight: ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>,
             Sparkles: ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>,
-            Send: ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>,
+            Wind: ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"></path><path d="M9.6 4.6A2 2 0 1 1 11 8H2"></path><path d="M12.6 19.4a2 2 0 1 0-1.4-3.4H2"></path></svg>,
             Shield: ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path></svg>,
-            Moon: ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>
+            Stars: ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>
         };
 
         const { useState, useEffect, useCallback } = React;
@@ -56,51 +56,51 @@
             const scenes = [
                 {
                     id: 'start',
-                    title: 'Уютный Чарадор',
-                    text: 'В изумрудном мире Чарадор сегодня необычайно тихо. Вы — Дрыхала, маленькая дрёма ростом всего в ладонь. В ваших руках — Латар, древняя флейта. Ваш верный друг Бермяш уже собрал котомку. Вы чувствуете странный зов артефакта к заброшенному городу Мирин...',
+                    title: 'Тишина Чарадора',
+                    text: 'Вы — Дрыхала, маленькая дрёма из уютного мира Чарадор. В ваших руках Латар — флейта, которая молчит без истинного чувства. Ваш верный друг Бермяш уже поправляет лямки котомки. Зов артефакта ведет вас к заброшенному терем-граду Мирин. Готовы ли вы покинуть тишину дома?',
                     options: [
-                        { text: 'Довериться интуиции и Латару', next: 'myrin_approach', effect: { resonance: 5 } },
-                        { text: 'Спросить Бермяша, готов ли он', next: 'myrin_approach', effect: { resonance: 15 } }
+                        { text: 'Довериться Латару и чувствам', next: 'myrin_path', effect: { resonance: 10 } },
+                        { text: 'Спросить Бермяша, не страшно ли ему', next: 'myrin_path', effect: { resonance: 5 } }
                     ],
-                    imagePrompt: 'Tiny magical person holding an ethnic wooden flute, cozy emerald forest village, Slavic solar ornaments, digital painting, Hayao Miyazaki style'
+                    imagePrompt: 'Tiny 30cm tall magical person with a wooden flute, emerald forest village, Slavic solar patterns, Studio Ghibli style, atmospheric lighting'
                 },
                 {
-                    id: 'myrin_approach',
+                    id: 'myrin_path',
                     title: 'Терем-град Мирин',
-                    text: 'Стены Мирина пугают своим величием. Здесь вы встречаете Престана, командира наездников на совах. "Тьма близко," — предупреждает он. Вы решаете войти внутрь цитадели.',
+                    text: 'Мирин встречает вас суровостью уральской готики. Здесь вы встречаете Престана и его наездников на совах. "Тьма Смергов близко," — говорит он. Вы чувствуете, как флейта начинает вибрировать в такт биению сердца Бермяша.',
                     options: [
-                        { text: 'Сыграть мелодию памяти предков', next: 'awakening', effect: { resonance: 10 } }
+                        { text: 'Сыграть песню Памяти', next: 'awakening', effect: { resonance: 15 } }
                     ],
-                    imagePrompt: 'Ancient giant wooden citadel in the fog, giant owls flying above, industrial gothic elements, emerald glow'
+                    imagePrompt: 'Giant industrial wooden fortress in snowy mountains, huge owls flying, technical magic aesthetics, cinematic fog'
                 },
                 {
                     id: 'awakening',
                     title: 'Роковая Ошибка',
-                    text: 'Ваша музыка пробуждает не только память, но и Зло. Из теней вырываются Смерги — бесплотные тени Мага Яха. Они пожирают жизненную искру мира. Чарадор под ударом!',
+                    text: 'Музыка пробуждает Зло. Маг Ях выпускает Смергов — тени, пожирающие искру жизни. Мир рушится. Престан исчезает в вихре, давая вам шанс уйти. Вы бежите к берендеям в Белогорье.',
                     options: [
-                        { text: 'Бежать в Белогорье к берендеям', next: 'belogorye', effect: { resonance: -10 } },
-                        { text: 'Защитить Бермяша песней', next: 'belogorye', effect: { resonance: 20 } }
+                        { text: 'Защитить Бермяша мелодией щита', next: 'belogorye', effect: { resonance: 20 } },
+                        { text: 'Ускорить шаг, спасая артефакт', next: 'belogorye', effect: { resonance: -10 } }
                     ],
-                    imagePrompt: 'Shadowy ethereal ghosts attacking a wooden city, purple magical energy, intense cinematic lighting'
+                    imagePrompt: 'Ethereal shadow wraiths attacking a wooden city, purple magical energy, intense action, high fantasy'
                 },
                 {
                     id: 'belogorye',
                     title: 'Наследница Эладара',
-                    text: 'В Белогорье вы узнаете правду: вы — Эладара, наследница древнего долга. Латар — ключ к Древу Миров. Но маг Ях уже здесь! Он поражает Бермяша заклятием Смертельного Сна.',
+                    text: 'В Белогорье открывается истина: вы — Эладара, наследница долга Хранителя. Латар — ключ к Вэдхильму. Но Ях настигает вас. Его заклятие поражает Бермяша, погружая его в Смертельный Сон. Тьма наступает.',
                     options: [
-                        { text: 'Впасть в месть и ярость', next: 'battle_end', effect: { resonance: -30 } },
-                        { text: 'Искать в душе Песнь Жизни', next: 'finale', effect: { resonance: 50 } }
+                        { text: 'Поддаться ярости и мести', next: 'dark_end', effect: { resonance: -50 } },
+                        { text: 'Петь от любви, а не от горя', next: 'finale', effect: { resonance: 40 } }
                     ],
-                    imagePrompt: 'Magical forest with giant white trees, tiny heroes facing a dark sorcerer, emotional scene'
+                    imagePrompt: 'Magical forest with giant white birch trees, tiny druma crying over a fallen friend, dark sorcerer in the background'
                 },
                 {
                     id: 'finale',
                     title: 'Песнь Жизни',
-                    text: 'Ваша музыка — это крик любви, а не мести. Богиня Лада Явь является на ваш зов, выжигая Тень. Бермяш открывает глаза. Вы теперь Хранитель, и война за Многоземье только началась.',
+                    text: 'Ваша музыка резонирует с душой Бермяша. Это не просто звук — это гимн преданности. Богиня Лада Явь является в золотом сиянии, выжигая Смергов. Бермяш открывает глаза. Первая битва выиграна, но война за Многоземье только начинается.',
                     options: [
-                        { text: 'Вернуться к истоку', next: 'intro', effect: { resonance: 0 } }
+                        { text: 'Вернуться к Итоку Хранителем', next: 'intro', effect: { resonance: 0 } }
                     ],
-                    imagePrompt: 'Radiant golden goddess appearing in a winter forest, light overcoming darkness, rebirth theme'
+                    imagePrompt: 'Golden Slavic goddess appearing in a winter forest, light overcoming darkness, emotional reunion'
                 }
             ];
 
@@ -126,13 +126,13 @@
                 setIsGenerating(true);
                 setError(null);
                 try {
-                    const apiKey = ""; // Будет подставлено автоматически
+                    const apiKey = ""; // API ключ подставится средой
                     const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
                     const result = await fetchWithRetry(url, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            instances: { prompt: `Cinematic fantasy art, ${prompt}, high detail, 8k, vibrant colors, Slavic folklore vibes` },
+                            instances: { prompt: prompt },
                             parameters: { sampleCount: 1 }
                         })
                     });
@@ -140,7 +140,7 @@
                         setCurrentImage(`data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`);
                     }
                 } catch (err) {
-                    setError("Туман Бездны скрыл видение...");
+                    setError("Видение затуманено Тьмой...");
                 } finally {
                     setIsGenerating(false);
                 }
@@ -153,9 +153,10 @@
             }, [currentScene?.id, gameState, generateImage]);
 
             const handleOption = (option) => {
-                if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+                if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
                 const newResonance = Math.min(100, Math.max(0, resonance + (option.effect?.resonance || 0)));
                 setResonance(newResonance);
+                
                 if (option.next === 'intro') {
                     setHistory([]);
                     setResonance(50);
@@ -168,69 +169,73 @@
 
             if (gameState === 'intro') {
                 return (
-                    <div className="min-h-screen flex flex-col items-center justify-center p-8 text-center space-y-12 bg-stone-950">
+                    <div className="min-h-screen flex flex-col items-center justify-center p-8 text-center space-y-10 bg-stone-950 text-amber-50">
                         <div className="relative">
-                            <div className="absolute -inset-8 border border-amber-500/20 rounded-full animate-pulse"></div>
-                            <Music className="w-20 h-20 text-amber-500 mx-auto" />
+                            <div className="absolute -inset-10 border border-amber-500/10 rounded-full animate-pulse"></div>
+                            <Music className="w-24 h-24 text-amber-500 mx-auto" />
                         </div>
                         <div className="space-y-4">
-                            <h1 className="text-5xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-b from-amber-200 to-amber-700 uppercase tracking-widest">Чарадор</h1>
-                            <p className="text-amber-500/60 text-sm font-serif italic">Наследница флейты Латар</p>
+                            <h1 className="text-4xl font-bold tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-b from-amber-100 to-amber-600 uppercase">Чарадор</h1>
+                            <p className="text-amber-500/60 italic text-sm tracking-widest uppercase">Наследница флейты Латар</p>
                         </div>
                         <button 
                             onClick={() => setGameState('playing')}
-                            className="w-full max-w-xs py-5 bg-amber-800 hover:bg-amber-700 text-white font-bold rounded-2xl shadow-2xl transition-all active:scale-95"
+                            className="w-full max-w-xs py-6 bg-amber-900/40 hover:bg-amber-800/60 border border-amber-500/30 text-amber-200 font-bold rounded-full transition-all active:scale-95 resonance-glow uppercase tracking-widest"
                         >
-                            ОТКРЫТЬ ГЛАВУ 1
+                            Начать путь
                         </button>
                     </div>
                 );
             }
 
             return (
-                <div className="min-h-screen bg-stone-950 flex flex-col relative overflow-hidden">
-                    {/* Image Layer */}
+                <div className="min-h-screen bg-black flex flex-col relative overflow-hidden">
+                    {/* Фон с картинкой */}
                     <div className="absolute inset-0 z-0">
                         {isGenerating ? (
-                            <div className="w-full h-full flex items-center justify-center">
-                                <div className="w-12 h-12 border-2 border-amber-500/20 border-t-amber-500 rounded-full animate-spin"></div>
+                            <div className="w-full h-full flex items-center justify-center bg-stone-950">
+                                <Wind className="w-12 h-12 text-amber-500 animate-bounce opacity-20" />
                             </div>
                         ) : currentImage ? (
-                            <img src={currentImage} className="w-full h-full object-cover opacity-50" />
+                            <img src={currentImage} className="w-full h-full object-cover opacity-40 transition-opacity duration-1000" />
                         ) : null}
-                        <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/40 to-transparent"></div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
                     </div>
 
-                    {/* Stats Header */}
-                    <div className="relative z-20 p-5 flex justify-between items-center backdrop-blur-md bg-black/30 border-b border-white/5">
-                        <div className="flex items-center gap-3">
-                            <Heart className={`w-6 h-6 ${resonance > 70 ? 'text-red-500 animate-pulse' : 'text-amber-700'}`} />
-                            <div className="h-2 w-32 bg-stone-800 rounded-full">
-                                <div className="h-full bg-amber-500 transition-all duration-1000" style={{ width: `${resonance}%` }}></div>
+                    {/* Индикатор Резонанса */}
+                    <div className="relative z-20 p-6 flex justify-between items-center">
+                        <div className="flex items-center gap-4">
+                            <Heart className={`w-6 h-6 transition-colors duration-500 ${resonance > 75 ? 'text-red-500' : 'text-amber-600'}`} />
+                            <div className="h-1.5 w-32 bg-white/10 rounded-full overflow-hidden">
+                                <div className="h-full bg-amber-500 transition-all duration-1000 shadow-[0_0_10px_rgba(245,158,11,0.5)]" style={{ width: `${resonance}%` }}></div>
                             </div>
                         </div>
-                        <span className="text-xs font-bold text-amber-500 tracking-tighter uppercase">Резонанс: {resonance}%</span>
+                        <span className="text-[10px] font-bold text-amber-500 uppercase tracking-[0.2em]">Резонанс: {resonance}%</span>
                     </div>
 
-                    {/* Content Area */}
-                    <div className="relative z-10 flex-1 flex flex-col justify-end p-6 pb-12 space-y-6 max-w-2xl mx-auto w-full">
+                    {/* Сюжет */}
+                    <div className="relative z-10 flex-1 flex flex-col justify-end p-6 pb-16 space-y-8 max-w-xl mx-auto w-full">
                         <div className="scene-enter space-y-4">
-                            <h2 className="text-3xl font-serif font-bold text-white leading-tight drop-shadow-lg">{currentScene?.title}</h2>
-                            <div className="bg-black/60 backdrop-blur-xl p-6 rounded-3xl border border-white/10 shadow-2xl">
-                                <p className="text-stone-100 leading-relaxed text-lg font-serif italic">{currentScene?.text}</p>
+                            <h2 className="text-2xl font-bold text-amber-100/90 tracking-wide border-l-2 border-amber-600 pl-4">{currentScene?.title}</h2>
+                            <div className="bg-stone-900/60 backdrop-blur-md p-6 rounded-2xl border border-white/5">
+                                <p className="text-stone-200 leading-relaxed text-lg italic">«{currentScene?.text}»</p>
                             </div>
                         </div>
 
-                        <div className="grid gap-3">
+                        <div className="space-y-3">
                             {currentScene?.options.map((opt, i) => (
-                                <button key={i} onClick={() => handleOption(opt)} className="group w-full p-4 bg-white/5 hover:bg-amber-900/40 border border-white/10 rounded-2xl text-left flex items-center justify-between transition-all active:scale-95">
-                                    <span className="text-sm text-stone-300 group-hover:text-white">{opt.text}</span>
-                                    <ArrowRight className="w-4 h-4 text-amber-500" />
+                                <button 
+                                    key={i} 
+                                    onClick={() => handleOption(opt)} 
+                                    className="group w-full p-5 bg-white/[0.03] hover:bg-amber-900/20 border border-white/5 hover:border-amber-500/30 rounded-xl text-left flex items-center justify-between transition-all"
+                                >
+                                    <span className="text-sm text-stone-400 group-hover:text-amber-100 transition-colors">{opt.text}</span>
+                                    <ArrowRight className="w-4 h-4 text-amber-700 group-hover:text-amber-500" />
                                 </button>
                             ))}
                         </div>
                         
-                        {error && <div className="text-[10px] text-red-500/70 text-center uppercase tracking-widest">{error}</div>}
+                        {error && <div className="text-[10px] text-amber-900 text-center uppercase tracking-widest animate-pulse">{error}</div>}
                     </div>
                 </div>
             );
