@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Music, Coffee, Compass, Send, RefreshCw, MoreVertical, Paperclip, Smile } from 'lucide-react';
+import { Music, Coffee, Compass, Send, RefreshCw, MoreVertical, Paperclip, Smile, ChevronRight } from 'lucide-react';
 
 const App = () => {
   const [gameState, setGameState] = useState('intro'); // intro, playing, ending
@@ -14,8 +14,10 @@ const App = () => {
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (gameState === 'playing') {
+      scrollToBottom();
+    }
+  }, [messages, gameState]);
 
   const story = [
     {
@@ -152,13 +154,13 @@ const App = () => {
         <div className="w-24 h-24 bg-amber-600/20 rounded-full flex items-center justify-center mb-8 shadow-2xl shadow-amber-500/10">
             <Compass size={48} className="text-amber-500" />
         </div>
-        <h1 className="text-4xl font-bold text-amber-500 mb-4">ЧАРАДОР</h1>
-        <p className="text-stone-400 text-sm mb-12 max-w-xs leading-relaxed">
-          Интерактивный текстовый бот по вселенной «Чарадор». Ваша история начинается здесь.
+        <h1 className="text-4xl font-bold text-amber-500 mb-4 tracking-tight">ЧАРАДОР</h1>
+        <p className="text-stone-400 text-sm mb-12 max-w-xs leading-relaxed italic">
+          Интерактивный текстовый квест. Испытайте свою судьбу в мире двух солнц.
         </p>
         <button 
           onClick={startGame}
-          className="w-full max-w-xs py-4 bg-amber-600 text-white rounded-2xl font-bold hover:bg-amber-500 active:scale-95 transition-all"
+          className="w-full max-w-xs py-4 bg-amber-600 text-white rounded-2xl font-bold hover:bg-amber-500 active:scale-95 transition-all shadow-lg shadow-amber-900/40"
         >
           ЗАПУСТИТЬ БОТА
         </button>
@@ -167,8 +169,8 @@ const App = () => {
   }
 
   return (
-    <div className="h-screen w-screen bg-[#0f111a] flex flex-col font-sans max-w-2xl mx-auto border-x border-white/5 shadow-2xl">
-      {/* Telegram Header */}
+    <div className="h-screen w-screen bg-[#0f111a] flex flex-col font-sans max-w-2xl mx-auto border-x border-white/5 shadow-2xl overflow-hidden">
+      {/* Header */}
       <div className="p-3 bg-[#1e2333] flex items-center justify-between shadow-md z-50">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-700 flex items-center justify-center text-white shadow-lg">
@@ -184,11 +186,11 @@ const App = () => {
         </div>
         <div className="flex gap-4">
            <div className="flex flex-col items-end">
-             <span className="text-[9px] uppercase text-rose-400 font-bold tracking-wider">Life</span>
+             <span className="text-[9px] uppercase text-rose-400 font-bold tracking-wider">Жизнь</span>
              <span className="text-xs font-mono text-white leading-none">{stats.life}</span>
            </div>
            <div className="flex flex-col items-end">
-             <span className="text-[9px] uppercase text-cyan-400 font-bold tracking-wider">Magic</span>
+             <span className="text-[9px] uppercase text-cyan-400 font-bold tracking-wider">Магия</span>
              <span className="text-xs font-mono text-white leading-none">{stats.magic}</span>
            </div>
            <button className="text-stone-400 hover:text-white transition-colors ml-2">
@@ -197,8 +199,8 @@ const App = () => {
         </div>
       </div>
 
-      {/* Chat Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#0f111a] custom-scrollbar pb-32">
+      {/* Chat Messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#0f111a] scroll-smooth pb-10">
         {messages.map((msg, i) => (
           <div key={i} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
             <div className={`max-w-[85%] p-4 rounded-2xl shadow-sm ${
@@ -216,15 +218,15 @@ const App = () => {
         ))}
         
         {gameState === 'ending' && (
-           <div className="flex justify-start animate-in zoom-in duration-500 pt-4">
+           <div className="flex justify-start animate-in zoom-in duration-500 pt-4 pb-20">
              <div className="bg-amber-600/10 border-2 border-amber-500/30 p-6 rounded-3xl w-full text-center">
                 <h3 className="text-amber-500 font-bold mb-2 uppercase tracking-widest text-xs">История завершена</h3>
                 <p className="text-sm text-stone-200 italic mb-6">
                    {stats.magic > 70 
                     ? "Магия аеров пробудилась в вас. Вы видите мир Чарадора не глазами, а сердцем." 
-                    : "Вы сохранили земную мудрость и силу жизни. Ваша история станет легендой."}
+                    : "Вы сохранили земную мудрость и силу жизни. Ваша история станет легендой для ланов."}
                 </p>
-                <button onClick={resetGame} className="flex items-center justify-center gap-2 mx-auto bg-amber-600 px-6 py-2 rounded-xl text-xs font-bold hover:bg-amber-500 transition-colors">
+                <button onClick={resetGame} className="flex items-center justify-center gap-2 mx-auto bg-amber-600 px-6 py-2 rounded-xl text-xs font-bold hover:bg-amber-500 transition-colors shadow-lg">
                   <RefreshCw size={14} /> Начать заново
                 </button>
              </div>
@@ -233,7 +235,7 @@ const App = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Telegram Input Area */}
+      {/* Input Area / Options */}
       {gameState === 'playing' && (
         <div className="p-4 bg-[#1e2333] border-t border-white/5 z-50">
           <div className="flex flex-col gap-2">
@@ -242,20 +244,20 @@ const App = () => {
                 <button
                   key={idx}
                   onClick={() => handleChoice(opt)}
-                  className="w-full bg-[#2a2f42] hover:bg-[#363b52] active:bg-amber-600 text-stone-200 text-sm py-3 px-4 rounded-xl text-left border border-white/5 transition-all flex items-center justify-between group"
+                  className="w-full bg-[#2a2f42] hover:bg-[#363b52] active:bg-amber-600 text-stone-200 text-sm py-3 px-4 rounded-xl text-left border border-white/5 transition-all flex items-center justify-between group active:scale-[0.98]"
                 >
-                  <span>{opt.text}</span>
-                  <ChevronRight size={16} className="text-stone-500 group-hover:text-amber-500" />
+                  <span className="flex-1 pr-4">{opt.text}</span>
+                  <ChevronRight size={16} className="text-stone-500 group-hover:text-amber-500 flex-shrink-0" />
                 </button>
               ))}
             </div>
             <div className="flex items-center gap-3 text-stone-500 px-1 pt-1">
-               <Smile size={22} className="hover:text-amber-500 cursor-pointer" />
-               <div className="flex-1 bg-[#2a2f42] rounded-full px-4 py-2 text-xs text-stone-400 italic">
-                 Выберите вариант выше...
+               <Smile size={22} className="hover:text-amber-500 cursor-pointer transition-colors" />
+               <div className="flex-1 bg-[#2a2f42] rounded-full px-4 py-2 text-[11px] text-stone-400 italic">
+                 Выберите действие...
                </div>
-               <Paperclip size={22} className="hover:text-amber-500 cursor-pointer" />
-               <div className="w-10 h-10 rounded-full bg-amber-600 flex items-center justify-center text-white opacity-50">
+               <Paperclip size={22} className="hover:text-amber-500 cursor-pointer transition-colors" />
+               <div className="w-10 h-10 rounded-full bg-amber-600/50 flex items-center justify-center text-white/50 cursor-not-allowed">
                  <Send size={18} />
                </div>
             </div>
@@ -263,9 +265,9 @@ const App = () => {
         </div>
       )}
 
-      {/* Hero Badge Overlay */}
+      {/* Hero Icon Overlay */}
       {hero && (
-        <div className="absolute top-20 right-6 z-[60] bg-[#1e2333]/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-amber-500/20 flex items-center gap-2 shadow-lg">
+        <div className="absolute top-20 right-6 z-[60] bg-[#1e2333]/90 backdrop-blur-md px-3 py-1.5 rounded-full border border-amber-500/30 flex items-center gap-2 shadow-xl animate-in slide-in-from-right-4">
           {hero === 'Dryhala' ? <Music size={12} className="text-cyan-400" /> : <Coffee size={12} className="text-orange-400" />}
           <span className="text-[10px] font-bold text-stone-300 uppercase tracking-tighter">
             {hero === 'Dryhala' ? 'Дрыхала' : 'Бермяш'}
