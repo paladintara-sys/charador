@@ -23,12 +23,11 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        .scene-enter { animation: fadeIn 2s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(1.02); } to { opacity: 1; transform: scale(1); } }
+        .scene-enter { animation: fadeIn 1.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .resonance-bar {
-            box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
-            border: 1px solid rgba(251, 191, 36, 0.2);
+        .resonance-glow {
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
         }
 
         .bg-vignette {
@@ -36,9 +35,35 @@
         }
 
         .glass-panel {
-            background: rgba(28, 25, 23, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(15, 12, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(251, 191, 36, 0.15);
+        }
+
+        .echo-flicker {
+            animation: flicker 5s infinite;
+        }
+        @keyframes flicker {
+            0%, 100% { opacity: 0.95; }
+            50% { opacity: 0.8; }
+        }
+
+        .low-resonance-tint {
+            background: rgba(0, 0, 40, 0.3);
+            mix-blend-mode: multiply;
+        }
+
+        .high-resonance-glow {
+            background: radial-gradient(circle at center, rgba(251, 191, 36, 0.1) 0%, transparent 70%);
+        }
+
+        .danger-pulse {
+            animation: pulse-red 2.5s infinite;
+        }
+        @keyframes pulse-red {
+            0% { box-shadow: inset 0 0 40px rgba(0,0,0,0); }
+            50% { box-shadow: inset 0 0 100px rgba(153, 27, 27, 0.3); }
+            100% { box-shadow: inset 0 0 40px rgba(0,0,0,0); }
         }
     </style>
 </head>
@@ -46,23 +71,46 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { Music, Heart, ArrowRight, Sparkles, Wind, Shield, Wand2 } = {
-            Music: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>,
+        const { Music, Heart, ArrowRight, Sparkles, Flame, Eye, Volume2, VolumeX, Users } = {
+            Music: ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>,
             Heart: ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>,
             ArrowRight: ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>,
-            Sparkles: ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+            Sparkles: ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>,
+            Flame: ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>,
+            Eye: ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>,
+            Volume2: ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>,
+            VolumeX: ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>,
+            Users: ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
         };
 
-        const { useState, useEffect, useCallback } = React;
+        const { useState, useEffect, useCallback, useRef } = React;
 
         const App = () => {
             const [gameState, setGameState] = useState('intro');
-            const [resonance, setResonance] = useState(40); // Базовый резонанс
+            const [resonance, setResonance] = useState(60); // Резонанс двух сердец
+            const [echo, setEcho] = useState(100); 
             const [history, setHistory] = useState([]);
             const [isGenerating, setIsGenerating] = useState(false);
             const [currentImage, setCurrentImage] = useState(null);
             const [error, setError] = useState(null);
             const [tg, setTg] = useState(null);
+            const [isMuted, setIsMuted] = useState(false);
+            
+            const audioRef = useRef(null);
+
+            useEffect(() => {
+                // Путь к музыке в песочнице
+                audioRef.current = new Audio('http://googleusercontent.com/file_content/1');
+                audioRef.current.loop = true;
+                audioRef.current.volume = 0.5;
+                
+                return () => {
+                    if (audioRef.current) {
+                        audioRef.current.pause();
+                        audioRef.current = null;
+                    }
+                };
+            }, []);
 
             useEffect(() => {
                 if (window.Telegram && window.Telegram.WebApp) {
@@ -77,192 +125,235 @@
             const scenes = [
                 {
                     id: 'start',
-                    title: 'Изумрудный Чарадор',
-                    text: 'Вы — Дрыхала, маленькая дрома ростом всего 30 см. Ваша спокойная жизнь в общине меняется навсегда, когда вам передают Латар — древнюю флейту Хранителя. Ваш верный друг Бермяш уже поправляет лямки котомки у порога. Вы чувствуете, что без его открытого сердца эта флейта — лишь безжизненное дерево.',
+                    title: 'Дыхание Итока',
+                    text: 'Старый Иток окутан тишиной. Латар в ваших руках холоден, пока Бермяш не берет вас за руку. «Чувствуешь? Тени дрём стали длиннее», — шепчет он. Пророчество Эладары оживает: музыка — это не заклинание, а резонанс вашей преданности.',
                     options: [
-                        { text: 'Взять Латар и довериться Бермяшу', next: 'myrin', effect: { resonance: 15 } },
-                        { text: 'Сыграть пробную ноту, слушая тишину', next: 'myrin', effect: { resonance: 5 } }
+                        { text: 'Довериться чувствам Бермяша', next: 'myrin', effect: { resonance: 15, echo: -10 }, hint: 'Связь крепнет' },
+                        { text: 'Искать ответ в одиночку', next: 'myrin', effect: { resonance: -10, echo: -5 }, hint: 'Путь к тьме' }
                     ],
-                    imagePrompt: 'Tiny 30cm humanoid with a wooden flute, emerald forest village, Slavic solar patterns, Studio Ghibli style, atmospheric lighting, soft focus'
+                    basePrompt: 'A 30cm tiny humanoid girl with a flute in a deep Slavic forest, next to a loyal companion, ancient mossy stones'
                 },
                 {
                     id: 'myrin',
-                    title: 'Мирин: Индустриальная готика',
-                    text: 'Дорога ведет к заброшенному терем-граду волшебников — Мирину. Здесь уральская мощь камня сливается с магией металла. Командир Престан на исполинском сове преграждает путь: «Тьма Смергов уже близко. Готова ли ты пробудить память предков, Эладара?»',
+                    title: 'Осажденный Мирин',
+                    text: 'Терем-град Мирин тонет в гуле огромных сових крыльев. Магия Яха высасывает ритм города. «Если мы не найдем общий тон, Врата захлопнутся навсегда», — Престан указывает на вершину башни. Вы чувствуете страх Бермяша.',
                     options: [
-                        { text: 'Сыграть Гимн Пробуждения', next: 'error', effect: { resonance: 20 } },
-                        { text: 'Просить защиты у ланов на совах', next: 'error', effect: { resonance: -10 } }
+                        { text: 'Успокоить Бермяша песней', next: 'catastrophe', effect: { resonance: 20, echo: -20 }, hint: 'Гармония' },
+                        { text: 'Сосредоточиться на защите Мирина', next: 'catastrophe', effect: { resonance: -5, echo: -25 }, hint: 'Долг превыше всего' }
                     ],
-                    imagePrompt: 'Giant industrial wooden fortress in snowy mountains, huge owls flying, Ural industrial gothic style, cinematic fog, minerals'
+                    basePrompt: 'Dark fortress under a moonless sky, giant mechanical owls, stone towers, sparks of blue magic'
                 },
                 {
-                    id: 'error',
-                    title: 'Роковая Ошибка',
-                    text: 'Музыка Латара открывает Врата Вэдхильма, но вместо предков пробуждается маг Ях. Небо чернеет от Смергов — бесплотных теней. Мирин рушится под натиском Пустоты. Престан исчезает в магическом вихре, давая вам шанс бежать в Белогорье.',
+                    id: 'catastrophe',
+                    title: 'Вторжение Смергов',
+                    text: 'Небо раскололось. Смерги — бездушные тени — текут сквозь стены. Бермяш загораживает вас собой: «Беги в Белогорье! Латар должен звучать!». Его резонанс слабеет, он теряет связь с реальностью под натиском Тьмы.',
                     options: [
-                        { text: 'Крепче сжать руку Бермяша и бежать', next: 'belogorye', effect: { resonance: 30 } }
+                        { text: 'Разделить боль Бермяша через флейту', next: 'belogorye', effect: { resonance: 25, echo: -30 }, hint: 'Самопожертвование' },
+                        { text: 'Ускорить бег, веря в его силу', next: 'belogorye', effect: { resonance: -15, echo: -10 }, hint: 'Рискованное доверие' }
                     ],
-                    imagePrompt: 'Ethereal shadow wraiths attacking a magical city, purple and black magic, collapsing stone towers, dramatic action'
+                    basePrompt: 'Swarm of shadow wraiths attacking a tiny village, violet lightning, cinematic action, intense atmosphere'
                 },
                 {
                     id: 'belogorye',
-                    title: 'Смертельный Сон',
-                    text: 'В Белогорье вас настигает Ях. Его темное заклятие поражает Бермяша. Ваш друг — ваш живой камертон — засыпает Смертельным Сном. Флейта в ваших руках мгновенно замолкает. Вы остались одна против наступающей Тьмы Мультивселенной.',
+                    title: 'Ледяное Безмолвие',
+                    text: 'Белогорье. Берендеи спят мертвым сном под пеплом. Ях настиг вас. Удар магии — и Бермяш падает. Смертельный Сон. Латар в ваших руках превращается в лед. Только чистый резонанс сердца может вернуть жизнь в это безмолвие.',
                     options: [
-                        { text: 'Играть Песнь Жизни из чистой любви', next: 'victory', effect: { resonance: 50 } },
-                        { text: 'Поддаться ярости и мести', next: 'victory', effect: { resonance: -30 } }
+                        { text: 'Сыграть Песнь Жизни для друга', next: 'finale', effect: { resonance: 40, echo: -40 }, hint: 'Крик души' },
+                        { text: 'Вызвать Яха на дуэль звуков', next: 'finale', effect: { resonance: -10, echo: -10 }, hint: 'Ярость' }
                     ],
-                    imagePrompt: 'Tiny drama weeping over a fallen friend, silver birch forest, misty morning, emotional lighting, cinematic'
+                    basePrompt: 'A tiny hero crying over a fallen friend in a winter forest, glowing magical tree in the background, emotional'
                 },
                 {
-                    id: 'victory',
-                    title: 'Сила Двоих',
-                    text: 'Ваша музыка резонирует с душой Бермяша. Это не просто звук, а крик Хранителя. Золотое сияние Лады Явь выжигает тени. Маг Ях отступил, похитив миролик, но вы осознаете: вы больше не испуганная беглянка. Вы — Хранитель Тарры.',
+                    id: 'finale',
+                    title: 'Явление Лады Яви',
+                    text: 'Музыка пронзает пустоту. Резонанс достигает предела. Золотые листья вихрем сметают Тени. Богиня Лада Явь является на ваш зов. Бермяш открывает глаза. Вы победили сегодня, но Ях похитил миролик. Путешествие дрём только начинается...',
                     options: [
-                        { text: 'Принять свою судьбу Хранителя', next: 'intro', effect: { resonance: 0 } }
+                        { text: 'Продолжить путь', next: 'intro', effect: { resonance: 0, echo: 0 } }
                     ],
-                    imagePrompt: 'Golden Slavic goddess appearance, light overcoming darkness in a winter forest, rebirth'
+                    basePrompt: 'Beautiful goddess of light rising from the snow, golden light, tiny heroes looking up in awe, epic finale'
                 }
             ];
 
             const currentSceneId = history[history.length - 1]?.next || 'start';
             const currentScene = scenes.find(s => s.id === currentSceneId);
 
-            const fetchWithRetry = async (url, options, retries = 5, backoff = 1000) => {
-                try {
-                    const response = await fetch(url, options);
-                    if (!response.ok) throw new Error(`API Error: ${response.status}`);
-                    return await response.json();
-                } catch (err) {
-                    if (retries > 0) {
-                        await new Promise(r => setTimeout(r, backoff));
-                        return fetchWithRetry(url, options, retries - 1, backoff * 2);
-                    }
-                    throw err;
-                }
-            };
-
-            const generateImage = useCallback(async (prompt) => {
-                if (!prompt) return;
+            const generateImage = useCallback(async (basePrompt) => {
+                if (!basePrompt) return;
                 setIsGenerating(true);
                 setError(null);
+                
+                // Модификация промпта в зависимости от резонанса
+                const moodModifiers = resonance > 50 
+                    ? ", golden hour, divine light, warm colors, hopeful atmosphere, masterpiece, intricate detail" 
+                    : ", oppressive darkness, cold shadows, eerie mist, ominous atmosphere, fading light, gloomy palette";
+                
+                const fullPrompt = `Studio Ghibli style, ${basePrompt}${moodModifiers}`;
+
                 try {
-                    const apiKey = ""; // API Key подставляется средой
+                    const apiKey = ""; 
                     const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
-                    const result = await fetchWithRetry(url, {
+                    const response = await fetch(url, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            instances: { prompt: prompt },
+                            instances: { prompt: fullPrompt },
                             parameters: { sampleCount: 1 }
                         })
                     });
+                    const result = await response.json();
                     if (result.predictions?.[0]?.bytesBase64Encoded) {
                         setCurrentImage(`data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`);
                     }
                 } catch (err) {
-                    setError("Видение Многоземья затуманено...");
+                    setError("Многоземье скрыто туманом...");
                 } finally {
                     setIsGenerating(false);
                 }
-            }, []);
+            }, [resonance]);
 
             useEffect(() => {
-                if (gameState === 'playing' && currentScene?.imagePrompt) {
-                    generateImage(currentScene.imagePrompt);
+                if (gameState === 'playing' && currentScene?.basePrompt) {
+                    generateImage(currentScene.basePrompt);
                 }
             }, [currentScene?.id, gameState, generateImage]);
 
             const handleOption = (option) => {
-                if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+                if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
                 
                 const newResonance = Math.min(100, Math.max(0, resonance + (option.effect?.resonance || 0)));
-                setResonance(newResonance);
+                const newEcho = Math.min(100, Math.max(0, echo + (option.effect?.echo || 0)));
                 
-                if (option.next === 'intro') {
+                setResonance(newResonance);
+                setEcho(newEcho);
+                
+                if (option.next === 'intro' || newResonance <= 0) {
                     setHistory([]);
-                    setResonance(40);
+                    setResonance(60);
+                    setEcho(100);
                     setGameState('intro');
                     setCurrentImage(null);
+                    if (audioRef.current) audioRef.current.pause();
                 } else {
                     setHistory([...history, option]);
+                }
+            };
+
+            const toggleMute = () => {
+                if (audioRef.current) {
+                    audioRef.current.muted = !isMuted;
+                    setIsMuted(!isMuted);
+                }
+            };
+
+            const startGame = () => {
+                setGameState('playing');
+                if (audioRef.current) {
+                    audioRef.current.play().catch(e => console.log("Audio blocked"));
                 }
             };
 
             if (gameState === 'intro') {
                 return (
                     <div className="min-h-screen flex flex-col items-center justify-center p-8 text-center space-y-12 bg-stone-950 text-amber-50">
-                        <div className="relative">
-                            <div className="absolute -inset-10 border border-amber-500/10 rounded-full animate-pulse"></div>
-                            <Music className="w-20 h-20 text-amber-500 mx-auto" />
+                        <div className="relative group">
+                            <div className="absolute -inset-10 border border-amber-500/5 rounded-full animate-ping"></div>
+                            <Music className="w-24 h-24 text-amber-600 mx-auto drop-shadow-2xl group-hover:text-amber-400 transition-colors" />
                         </div>
                         <div className="space-y-4">
-                            <h1 className="text-4xl font-bold tracking-[0.3em] uppercase text-amber-100">Чарадор</h1>
-                            <p className="text-amber-500/60 italic tracking-widest text-xs uppercase font-sans">Наследница флейты</p>
+                            <h1 className="text-5xl font-bold tracking-[0.4em] uppercase text-amber-100">Чарадор</h1>
+                            <p className="text-amber-500/40 italic tracking-[0.5em] text-[10px] uppercase">Наследница флейты</p>
                         </div>
-                        <p className="text-stone-400 text-sm max-w-xs leading-relaxed italic">
-                            «Древний артефакт остается безжизненным деревом, пока не резонирует с чистотой открытого сердца...»
-                        </p>
+                        <div className="max-w-xs text-stone-500 text-xs leading-relaxed italic border-x border-amber-900/20 px-4">
+                            Дрыхала, твой Латар молчит без камертона души. Найди резонанс с Бермяшем, чтобы спасти Тарру.
+                        </div>
                         <button 
-                            onClick={() => setGameState('playing')}
-                            className="w-full max-w-xs py-5 bg-amber-900/40 hover:bg-amber-800/60 border border-amber-500/30 text-amber-200 font-bold rounded-full transition-all active:scale-95 uppercase tracking-widest text-xs resonance-bar"
+                            onClick={startGame}
+                            className="w-full max-w-xs py-6 bg-amber-950/20 hover:bg-amber-900/40 border border-amber-600/30 text-amber-100 font-bold rounded-2xl transition-all active:scale-95 uppercase tracking-[0.3em] text-[10px] resonance-glow shadow-inner"
                         >
-                            Пробудить связь
+                            Войти в Вэдхильм
                         </button>
                     </div>
                 );
             }
 
             return (
-                <div className="h-screen bg-black flex flex-col relative overflow-hidden">
-                    {/* Background Layer */}
+                <div className={`h-screen bg-black flex flex-col relative overflow-hidden transition-colors duration-[3000ms] ${resonance < 30 ? 'danger-pulse' : ''}`}>
+                    {/* Визуальный слой */}
                     <div className="absolute inset-0 z-0">
                         {isGenerating ? (
-                            <div className="w-full h-full flex items-center justify-center bg-stone-950">
-                                <Sparkles className="w-8 h-8 text-amber-500/20 animate-spin" />
+                            <div className="w-full h-full flex flex-col items-center justify-center bg-stone-950">
+                                <Eye className="w-8 h-8 text-amber-500/20 animate-pulse mb-2" />
+                                <span className="text-[9px] text-amber-700 uppercase tracking-[0.4em]">Видение формируется...</span>
                             </div>
                         ) : currentImage ? (
-                            <img src={currentImage} className="w-full h-full object-cover opacity-50 transition-opacity duration-1000" />
+                            <>
+                                <img src={currentImage} className="w-full h-full object-cover opacity-60 transition-opacity duration-1000 echo-flicker" />
+                                <div className={`absolute inset-0 transition-opacity duration-1000 ${resonance < 40 ? 'low-resonance-tint opacity-100' : 'opacity-0'}`}></div>
+                                <div className={`absolute inset-0 transition-opacity duration-1000 ${resonance > 70 ? 'high-resonance-glow opacity-100' : 'opacity-0'}`}></div>
+                            </>
                         ) : null}
                         <div className="absolute inset-0 bg-vignette"></div>
                     </div>
 
-                    {/* Stats Header */}
-                    <div className="relative z-20 p-6 flex justify-between items-center">
-                        <div className="flex items-center gap-3">
-                            <Heart className={`w-5 h-5 transition-colors duration-500 ${resonance > 70 ? 'text-red-500' : 'text-amber-800'}`} />
-                            <div className="h-1.5 w-32 bg-stone-800 rounded-full overflow-hidden border border-white/5">
-                                <div className="h-full bg-amber-500 transition-all duration-1000" style={{ width: `${resonance}%` }}></div>
+                    {/* Панель статуса */}
+                    <div className="relative z-20 p-6 flex justify-between items-start">
+                        <div className="flex flex-col gap-3">
+                            <div className="flex items-center gap-3">
+                                <Users className={`w-4 h-4 ${resonance < 40 ? 'text-red-700 animate-pulse' : 'text-blue-500'}`} />
+                                <div className="h-1 w-24 bg-white/5 rounded-full overflow-hidden">
+                                    <div className="h-full bg-blue-500 transition-all duration-1000 shadow-[0_0_8px_rgba(59,130,246,0.5)]" style={{ width: `${resonance}%` }}></div>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <Flame className="w-4 h-4 text-amber-700" />
+                                <div className="h-1 w-24 bg-white/5 rounded-full overflow-hidden">
+                                    <div className="h-full bg-amber-600 transition-all duration-700" style={{ width: `${echo}%` }}></div>
+                                </div>
                             </div>
                         </div>
-                        <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest">Резонанс: {resonance}%</span>
+                        <div className="flex flex-col items-end gap-2">
+                            <button 
+                                onClick={toggleMute}
+                                className="p-2 rounded-full bg-white/5 border border-white/10 text-amber-500 active:scale-90 transition-transform"
+                            >
+                                {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                            </button>
+                            <div className="text-right">
+                                <div className="text-[9px] font-bold text-blue-400 uppercase tracking-widest mb-1">Резонанс</div>
+                                <div className="text-lg font-bold text-amber-100 tabular-nums">{resonance}%</div>
+                            </div>
+                        </div>
                     </div>
 
-                    {/* Narrative Area */}
+                    {/* Игровой процесс */}
                     <div className="relative z-10 flex-1 flex flex-col justify-end p-6 pb-12 space-y-8 max-w-xl mx-auto w-full">
-                        <div className="scene-enter space-y-5">
-                            <div className="inline-block px-3 py-1 bg-amber-900/40 border border-amber-500/30 rounded-md text-[10px] uppercase tracking-widest text-amber-200">
-                                {currentScene?.title}
+                        <div className="scene-enter space-y-4">
+                            <div className="flex items-center gap-2">
+                                <Sparkles className="w-3 h-3 text-amber-500 animate-spin-slow" />
+                                <h2 className="text-[10px] font-bold text-amber-500/60 uppercase tracking-[0.3em]">{currentScene?.title}</h2>
                             </div>
-                            <div className="glass-panel p-6 rounded-2xl">
-                                <p className="text-stone-100 text-lg leading-relaxed italic">«{currentScene?.text}»</p>
+                            <div className="glass-panel p-8 rounded-[2.5rem] shadow-2xl">
+                                <p className="text-stone-200 leading-relaxed italic text-xl font-light">«{currentScene?.text}»</p>
                             </div>
                         </div>
 
-                        <div className="space-y-3">
+                        <div className="grid gap-3">
                             {currentScene?.options.map((opt, i) => (
                                 <button 
                                     key={i} 
                                     onClick={() => handleOption(opt)} 
-                                    className="group w-full p-5 bg-white/[0.03] hover:bg-amber-900/20 border border-white/5 hover:border-amber-500/30 rounded-2xl text-left flex items-center justify-between transition-all active:scale-[0.98]"
+                                    className="group w-full p-5 bg-stone-900/40 hover:bg-amber-950/30 border border-white/5 hover:border-amber-500/20 rounded-3xl text-left flex items-center justify-between transition-all active:scale-[0.98]"
                                 >
-                                    <span className="text-sm text-stone-300 group-hover:text-amber-100 transition-colors pr-4">{opt.text}</span>
-                                    <ArrowRight className="w-4 h-4 text-amber-900 group-hover:text-amber-500 transition-transform group-hover:translate-x-1" />
+                                    <div className="space-y-1">
+                                        <div className="text-[13px] text-stone-300 group-hover:text-amber-100 transition-colors">{opt.text}</div>
+                                        <div className="text-[8px] text-stone-600 uppercase tracking-widest">{opt.hint}</div>
+                                    </div>
+                                    <ArrowRight className="w-4 h-4 text-stone-800 group-hover:text-amber-500 transition-transform group-hover:translate-x-1" />
                                 </button>
                             ))}
                         </div>
                         
-                        {error && <div className="text-[10px] text-amber-900 text-center uppercase tracking-widest">{error}</div>}
+                        {error && <div className="text-[9px] text-amber-900/40 text-center uppercase tracking-widest">{error}</div>}
                     </div>
                 </div>
             );
