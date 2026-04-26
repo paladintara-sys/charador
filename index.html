@@ -14,6 +14,7 @@
         :root {
             --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
             --celtic-gold: #d4af37;
+            --gold-glow: rgba(212, 175, 55, 0.5);
         }
 
         body { 
@@ -34,120 +35,239 @@
             position: relative;
         }
 
-        /* Фиксированная область изображения */
         .image-frame {
-            height: 40vh;
+            height: 35vh;
             width: 100%;
             flex-shrink: 0;
             position: relative;
             z-index: 1;
             overflow: hidden;
+            border-bottom: 2px solid var(--celtic-gold);
         }
 
-        /* Область контента с прокруткой */
         .content-area {
-            height: 60vh;
+            height: 65vh;
             flex-grow: 1;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            padding-bottom: calc(20px + var(--safe-area-inset-bottom));
-            background: linear-gradient(to bottom, #0c0a09, #080707);
+            padding-bottom: calc(30px + var(--safe-area-inset-bottom));
+            background: linear-gradient(to bottom, #120e0c, #080707);
         }
 
         .ornament-border {
             position: relative;
-            border: 2px solid var(--celtic-gold);
-            padding: 24px 16px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 20px 16px;
             margin: 12px;
             min-height: calc(100% - 24px);
-            background: rgba(18, 14, 12, 0.95);
-            box-shadow: inset 0 0 20px rgba(212, 175, 55, 0.1);
+            background: rgba(18, 14, 12, 0.8);
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
             display: flex;
             flex-direction: column;
         }
 
-        .celtic-corner {
-            position: absolute;
-            width: 35px;
-            height: 35px;
-            fill: var(--celtic-gold);
-            opacity: 0.6;
-            pointer-events: none;
-        }
-
-        .stat-glow-hp { filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6)); }
-        .stat-glow-mp { filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.6)); }
-
         .choice-btn {
             background: linear-gradient(135deg, #1c1917 0%, #0c0a09 100%);
             border: 1px solid rgba(212, 175, 55, 0.2);
-            transition: all 0.2s ease;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
             width: 100%;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .choice-btn:hover {
+            border-color: var(--celtic-gold);
+            box-shadow: 0 0 20px var(--gold-glow);
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #2a2522 0%, #1c1917 100%);
         }
 
         .choice-btn:active {
-            transform: scale(0.97);
-            border-color: var(--celtic-gold);
-            background: rgba(212, 175, 55, 0.1);
+            transform: scale(0.96) translateY(0);
+            background: rgba(212, 175, 55, 0.2);
         }
 
-        .hand-drawn-filter {
-            filter: contrast(1.05) saturate(1.15) brightness(0.9);
+        /* Анимация золотого блеска */
+        .choice-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -60%;
+            width: 20%; height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(30deg);
+            transition: 0.8s;
         }
 
-        /* Скрытие полосы прокрутки для чистоты интерфейса */
-        .content-area::-webkit-scrollbar {
-            display: none;
+        .choice-btn:hover::after {
+            left: 130%;
         }
-        .content-area {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+
+        .celtic-corner {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            fill: var(--celtic-gold);
+            opacity: 0.5;
+            pointer-events: none;
         }
+
+        .content-area::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
     <script type="text/babel">
-        const { Heart, Sparkles, Volume2, VolumeX, ChevronRight, Skull, ShieldCheck } = {
+        const { Heart, Sparkles, Volume2, VolumeX, ChevronRight, Skull, ShieldCheck, Music } = {
             Heart: ({className}) => <svg className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>,
             Sparkles: ({className}) => <svg className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L9 9l-8 3 8 3 3 8 3-8 8-3-8-3-3-8z"/></svg>,
             Volume2: ({className}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>,
             VolumeX: ({className}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line></svg>,
             ChevronRight: ({className}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>,
-            Skull: ({className}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 10L9.01 10M15 10L15.01 10M12 2C6.48 2 2 6.48 2 12C2 14.59 3.02 16.94 4.65 18.73L4.65 22L8 22L8 20L16 20L16 22L19.35 22L19.35 18.73C20.98 16.94 22 14.59 22 12C22 6.48 17.52 2 12 2Z"/></svg>,
-            ShieldCheck: ({className}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+            Skull: ({className}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2C6.48 2 2 6.48 2 12C2 14.59 3.02 16.94 4.65 18.73L4.65 22L8 22L8 20L16 20L16 22L19.35 22L19.35 18.73C20.98 16.94 22 14.59 22 12C22 6.48 17.52 2 12 2Z"/></svg>,
+            Music: ({className}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
         };
 
         const CelticCorner = ({className}) => (
             <svg viewBox="0 0 100 100" className={className}>
-                <path d="M0,0 L100,0 L100,10 L10,10 L10,100 L0,100 Z M30,30 L70,30 L70,40 L40,40 L40,70 L30,70 Z" />
+                <path d="M0,0 L100,0 L100,5 L5,5 L5,100 L0,100 Z M20,20 L80,20 L80,25 L25,25 L25,80 L20,80 Z" />
             </svg>
         );
 
-        const { useState, useEffect, useRef } = React;
-
-        // В промптах теперь четко указано: аниме-арт, цифровая живопись, никаких фото.
         const STORY_DATA = [
             {
-                id: 'prologue',
-                title: "На грани миров",
-                text: "Холод Белогорья кусает пальцы. Вы с Бермяшем стоите на развилке. Впереди — Смерги, тени, пожирающие души. Позади — тлеющие угли дома. Флейта Латар в ваших руках дрожит. Нужно решить: потратить магию на защитный купол для двоих или рвануть сквозь тени, рискуя плотью, но сохраняя силы для будущего боя?",
-                prompt: "Stunning high-quality digital anime painting, vibrant fantasy colors, cel-shaded style, a small traveler and a loyal companion at a snowy mountain crossroad, glowing purple shadows in background, magical atmosphere, intricate hand-drawn textures, Makoto Shinkai aesthetic",
+                id: 0, title: "Пробуждение",
+                text: "Дремуш в огне. Вы с Бермяшем покидаете уютную хижину. Туман Смергов уже у порога. Латар в руках греется — флейта чувствует врага. Куда вы направитесь сначала?",
+                prompt: "Anime style digital art, Ghibli aesthetic, a tiny cottage on fire in a mystical forest, purple magical fog encroaching, two small heroes standing in front, vibrant embers, emotional lighting, high quality 2D.",
                 options: [
-                    { text: "Создать барьер (Защитить Бермяша)", cost: { mp: 35 }, next: 'forest_safe', label: "Магия и Дружба" },
-                    { text: "Бежать сквозь мрак (Рискнуть собой ради сил)", cost: { hp: 30 }, next: 'forest_hurt', label: "Жертва и Выживание" }
+                    { text: "К Серебряному озеру (Там есть путь)", cost: { mp: 5 }, label: "Надежда" },
+                    { text: "Вглубь Чернолесья (Скрыться в тенях)", cost: { hp: 10 }, label: "Осторожность" }
                 ]
             },
             {
-                id: 'forest_safe',
-                title: "Шепот Древних",
-                text: "Барьер мерцает, отражая когти теней. Бермяш благодарен, его взгляд спокоен. Но мана почти на исходе. Впереди — мост, который охраняет Лесной Страж. Он требует плату за проход: либо вы отдадите ему Флейту, либо сразитесь в ослабленном состоянии. Потеря флейты — это потеря цели, но смерть — это конец пути.",
-                prompt: "Hand-drawn fantasy anime illustration, 2D art style, a mystical forest bridge with a giant mossy stone guardian, soft magical glow, lush ancient trees, detailed hand-painted textures, Studio Ghibli inspired",
+                id: 1, title: "Серебряная Гладь",
+                text: "Озеро дышит магией. Вода замерзла, превратившись в зеркало. Смерги скользят по поверхности. Нужно перейти на тот берег.",
+                prompt: "Beautiful anime scene, frozen silver lake reflecting a starry night sky, tiny figures walking on ice, magical blue glow from under the water, ethereal atmosphere, Makoto Shinkai style.",
                 options: [
-                    { text: "Вступить в бой без магии (Честь)", cost: { hp: 45 }, next: 'victory', label: "Отчаяние" },
-                    { text: "Отдать Флейту (Предать цель ради жизни)", cost: { mp: 0, hp: 0 }, next: 'lost_path', label: "Трусость" },
-                    { text: "Попробовать обмануть Стража (Хитрость)", cost: { mp: 20 }, next: 'failure', label: "Риск" }
+                    { text: "Играть мелодию Льда", cost: { mp: 20 }, label: "Магия Фа" },
+                    { text: "Бежать быстро, не оглядываясь", cost: { hp: 20 }, label: "Скорость" }
+                ]
+            },
+            {
+                id: 2, title: "Шепот Камышей",
+                text: "В камышах вы находите раненого духа-хранителя. Он едва дышит. Поможете ему или сохраните ману?",
+                prompt: "Anime illustration, mystical riverbank with tall golden reeds, a small glowing fairy-like spirit trapped in dark vines, soft evening light, detailed 2D backgrounds.",
+                options: [
+                    { text: "Поделиться искрой жизни", cost: { mp: 15, hp: 5 }, label: "Доброта" },
+                    { text: "Оставить его (Слишком опасно)", cost: { hp: 0 }, label: "Прагматизм" }
+                ]
+            },
+            {
+                id: 3, title: "Врата Белогорья",
+                text: "Горы встают стеной. Впереди — древние врата, запертые на музыкальный замок. Бермяш нашел символы, но они непонятны.",
+                prompt: "Stunning anime art, massive ancient stone gates carved into a white mountain, runic symbols glowing golden, tiny heroes looking up in awe, cinematic scale, high fantasy anime style.",
+                options: [
+                    { text: "Импровизировать на флейте", cost: { mp: 25 }, label: "Интуиция" },
+                    { text: "Искать рычаг в обломках", cost: { hp: 15 }, label: "Труд" }
+                ]
+            },
+            {
+                id: 4, title: "Лабиринт Эхо",
+                text: "Внутри гор звук искажается. Каждое слово возвращается криком. Смерги чуют ваш голос.",
+                prompt: "Intricate anime cave interior, crystalline walls reflecting light, purple shadows lurking in corners, eerie and beautiful, bioluminescent plants, 2D hand-drawn style.",
+                options: [
+                    { text: "Петь шепотом", cost: { mp: 10 }, label: "Тишина" },
+                    { text: "Заткнуть уши и идти вперед", cost: { hp: 10 }, label: "Воля" }
+                ]
+            },
+            {
+                id: 5, title: "Мост Над Бездной",
+                text: "Тонкий каменный мост качается над пустотой. Внизу — река забвения. Нужно равновесие.",
+                prompt: "Anime landscape, a precarious stone bridge connecting two peaks, swirling dark clouds below, lightning in the distance, dramatic anime composition, vibrant colors.",
+                options: [
+                    { text: "Держаться за Бермяша", cost: { mp: 0 }, label: "Дружба" },
+                    { text: "Использовать левитацию", cost: { mp: 30 }, label: "Высшая Магия" }
+                ]
+            },
+            {
+                id: 6, title: "Старый Престан",
+                text: "Вы встречаете всадника на сове. Это Престан. Он ранен и просит передать весть в Мирин.",
+                prompt: "Anime character design, an old warrior in wooden armor riding a giant fluffy owl, snowy forest background, soft sunlight filtering through trees, emotional anime scene.",
+                options: [
+                    { text: "Взять свиток", cost: { mp: 0 }, label: "Долг" },
+                    { text: "Исцелить воина", cost: { mp: 40 }, label: "Милосердие" }
+                ]
+            },
+            {
+                id: 7, title: "Сад Забытых Снов",
+                text: "Цветы здесь пахнут домом. Вы начинаете засыпать. Это ловушка Мага Яха.",
+                prompt: "Magical anime garden, surreal oversized flowers with glowing pollen, pink and purple hues, a sense of drowsiness and beauty, dreamlike anime aesthetic.",
+                options: [
+                    { text: "Уколоть палец шипом (Проснуться)", cost: { hp: 15 }, label: "Боль" },
+                    { text: "Сыграть резкую ноту", cost: { mp: 20 }, label: "Резонанс" }
+                ]
+            },
+            {
+                id: 8, title: "Окраина Мирина",
+                text: "Град-терем в осаде. Тени карабкаются по стенам. Вам нужно пробраться внутрь незамеченными.",
+                prompt: "Anime cityscape, ancient wooden Slavic fortress under attack by shadow monsters, chaotic magical fires, dark sky, epic scale, detailed architecture.",
+                options: [
+                    { text: "Использовать маскировку", cost: { mp: 25 }, label: "Хитрость" },
+                    { text: "Пробиться с боем", cost: { hp: 35 }, label: "Героизм" }
+                ]
+            },
+            {
+                id: 9, title: "Тронный Зал",
+                text: "Король дрёмов превращен в камень. Перед вами — зеркало Истины. Оно показывает ваш главный страх.",
+                prompt: "Grand anime throne room, stone statues of kings, a massive ornate mirror glowing with white light, reflections of shadows, cinematic lighting, 2D masterpiece.",
+                options: [
+                    { text: "Разбить зеркало", cost: { hp: 20 }, label: "Гнев" },
+                    { text: "Посмотреть в глаза страху", cost: { mp: 15 }, label: "Мудрость" }
+                ]
+            },
+            {
+                id: 10, title: "Библиотека Вед",
+                text: "Здесь хранятся знания о Латаре. Чтобы прочесть их, нужно пожертвовать воспоминанием.",
+                prompt: "Infinite anime library, scrolls floating in the air, golden dust motes, magical atmosphere, ancient and wise feeling, soft glow from books.",
+                options: [
+                    { text: "Отдать память о первой песне", cost: { mp: 0 }, label: "Жертва" },
+                    { text: "Попробовать взломать печать", cost: { mp: 30 }, label: "Сила" }
+                ]
+            },
+            {
+                id: 11, title: "Кузница Духа",
+                text: "Ваш артефакт поврежден. Нужно перековать его в пламени сердца. Бермяш готов помочь.",
+                prompt: "Magical anime forge, blue and gold flames, a flute being tempered in magic, sparks like stars, intense and focused atmosphere, vibrant colors.",
+                options: [
+                    { text: "Вложить свою волю", cost: { hp: 25 }, label: "Закалка" },
+                    { text: "Петь вместе с Бермяшем", cost: { mp: 20 }, label: "Единство" }
+                ]
+            },
+            {
+                id: 12, title: "Башня Мага Яха",
+                text: "Вы на вершине. Маг Ях ждет вас. Он предлагает сделку: жизнь Бермяша в обмен на Флейту.",
+                prompt: "Dark anime tower top, swirling dark magic portal, a tall shadowy villain with glowing eyes, dramatic clouds, final boss atmosphere.",
+                options: [
+                    { text: "Отказаться и атаковать", cost: { mp: 40 }, label: "Верность" },
+                    { text: "Обмануть злодея", cost: { hp: 20, mp: 20 }, label: "Риск" }
+                ]
+            },
+            {
+                id: 13, title: "Последний Резонанс",
+                text: "Магия Яха почти поглотила мир. Остался один аккорд. Вы должны сыграть его вместе.",
+                prompt: "Epic anime finale, golden and purple magic clashing, two tiny heroes glowing with light, massive explosion of sparkles, emotional and powerful 2D art.",
+                options: [
+                    { text: "Песнь Лады Явь", cost: { mp: 50 }, label: "Свет" },
+                    { text: "Крик Чарадора", cost: { hp: 50 }, label: "Ярость" }
+                ]
+            },
+            {
+                id: 14, title: "Рассвет",
+                text: "Тьма рассеялась. Вы стоите на руинах башни, глядя на восходящее солнце. Мир спасен, но какой ценой?",
+                prompt: "Peaceful anime landscape, sunrise over a green valley, blooming flowers where shadows were, two heroes sitting together, beautiful and calm Makoto Shinkai sky.",
+                options: [
+                    { text: "Вернуться в Дремуш", cost: { mp: 0 }, label: "Домой" }
                 ]
             }
         ];
@@ -185,16 +305,13 @@
             useEffect(() => {
                 if (scene === 'playing') {
                     generateArt(STORY_DATA[step].prompt);
-                    // Скроллим вверх при переходе на новый шаг
-                    if (contentRef.current) contentRef.current.scrollTo(0, 0);
+                    if (contentRef.current) contentRef.current.scrollTo({top: 0, behavior: 'smooth'});
                 }
             }, [step, scene]);
 
             const startPlaying = () => {
                 setScene('playing');
-                if (audioRef.current) {
-                    audioRef.current.play().catch(e => console.log("Audio play blocked", e));
-                }
+                if (audioRef.current) audioRef.current.play().catch(() => {});
             };
 
             const handleOption = (opt) => {
@@ -211,15 +328,14 @@
                 <div className="h-screen bg-[#080707] flex flex-col items-center justify-between p-12 text-center border-4 border-[#d4af37]/20 m-2 rounded-3xl overflow-hidden">
                     <div className="mt-12">
                         <div className="w-24 h-24 mx-auto mb-6 relative">
-                            <Sparkles className="w-full h-full text-amber-500 animate-pulse" />
+                            <Music className="w-full h-full text-amber-500 animate-pulse" />
                             <div className="absolute inset-0 bg-amber-500/20 blur-xl rounded-full"></div>
                         </div>
-                        <h1 className="text-6xl font-bold tracking-tighter text-amber-50 uppercase mb-4" style={{fontFamily: 'Old Standard TT'}}>Чарадор</h1>
-                        <p className="text-amber-600 text-sm uppercase tracking-[0.5em] italic">Наследие Флейты</p>
+                        <h1 className="text-5xl font-bold tracking-tighter text-amber-50 uppercase mb-4" style={{fontFamily: 'Old Standard TT'}}>Чарадор</h1>
+                        <p className="text-amber-600 text-xs uppercase tracking-[0.5em] italic">15 ступеней к свету</p>
                     </div>
-                    
-                    <button onClick={startPlaying} className="w-full py-6 choice-btn rounded-2xl font-bold uppercase tracking-widest text-amber-100 shadow-[0_0_30px_rgba(212,175,55,0.15)] active:scale-95 transition-all">
-                        Войти в легенду
+                    <button onClick={startPlaying} className="w-full py-6 choice-btn rounded-2xl font-bold uppercase tracking-widest text-amber-100">
+                        Начать легенду
                     </button>
                     <audio ref={audioRef} src={AUDIO_FILE} loop />
                 </div>
@@ -228,9 +344,17 @@
             if (scene === 'gameover') return (
                 <div className="h-screen bg-black flex flex-col items-center justify-center p-8 text-center">
                     <Skull className="w-20 h-20 text-red-900 mb-6" />
-                    <h2 className="text-4xl font-bold text-red-700 uppercase mb-4 leading-tight">Ваша песнь оборвалась</h2>
-                    <p className="text-stone-500 mb-8 italic text-lg">Мир Чарадор поглощен тишиной...</p>
-                    <button onClick={() => window.location.reload()} className="px-10 py-4 border border-stone-800 rounded-full text-stone-400 uppercase text-xs tracking-widest">Переродиться</button>
+                    <h2 className="text-4xl font-bold text-red-700 uppercase mb-4">Ваша мелодия утихла</h2>
+                    <button onClick={() => window.location.reload()} className="px-10 py-4 border border-stone-800 rounded-full text-stone-400 uppercase text-xs">Попробовать снова</button>
+                </div>
+            );
+
+            if (scene === 'victory') return (
+                <div className="h-screen bg-[#080707] flex flex-col items-center justify-center p-8 text-center">
+                    <Sparkles className="w-20 h-20 text-amber-500 mb-6" />
+                    <h2 className="text-4xl font-bold text-amber-100 uppercase mb-4">Мир спасен</h2>
+                    <p className="text-stone-400 mb-8 italic">Вы прошли через все испытания и вернули рассвет в Чарадор.</p>
+                    <button onClick={() => window.location.reload()} className="px-10 py-4 border border-amber-600 rounded-full text-amber-500 uppercase text-xs">В начало</button>
                 </div>
             );
 
@@ -238,44 +362,40 @@
 
             return (
                 <div className="game-container">
-                    <audio ref={audioRef} src={AUDIO_FILE} loop />
-                    
                     <div className="image-frame">
                         {loadingImg ? (
                             <div className="absolute inset-0 flex items-center justify-center bg-stone-950">
                                 <div className="flex flex-col items-center gap-4">
-                                    <div className="w-10 h-10 border-2 border-amber-500/20 border-t-amber-500 rounded-full animate-spin"></div>
-                                    <span className="text-[10px] uppercase tracking-[0.3em] text-amber-900">Пробуждение видения...</span>
+                                    <div className="w-8 h-8 border-2 border-amber-500/20 border-t-amber-500 rounded-full animate-spin"></div>
+                                    <span className="text-[9px] uppercase tracking-[0.3em] text-amber-900">Видение Чарадора...</span>
                                 </div>
                             </div>
                         ) : (
-                            <img src={image || "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000"} className="w-full h-full object-cover hand-drawn-filter" alt="vision" />
+                            <img src={image || "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000"} className="w-full h-full object-cover grayscale-[0.2]" alt="anime scene" />
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#0c0a09] via-transparent to-black/20" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#120e0c] via-transparent to-black/30" />
                         
-                        {/* Stats Bar - компактнее для мобильных */}
-                        <div className="absolute top-8 left-4 right-4 flex justify-between items-start z-10">
-                            <div className="flex flex-col gap-2">
+                        <div className="absolute top-6 left-4 right-4 flex justify-between items-start z-10">
+                            <div className="flex flex-col gap-2 bg-black/40 p-2 rounded-lg backdrop-blur-sm border border-white/5">
                                 <div className="flex items-center gap-2">
-                                    <div className="p-1.5 rounded bg-black/60 border border-red-500/30 stat-glow-hp">
-                                        <Heart className="w-3 h-3 text-red-500" />
-                                    </div>
-                                    <div className="h-1.5 w-20 bg-stone-900 rounded-full border border-white/5 overflow-hidden">
+                                    <Heart className="w-3 h-3 text-red-500" />
+                                    <div className="h-1 w-20 bg-stone-900 rounded-full overflow-hidden">
                                         <div className="h-full bg-red-600 transition-all duration-500" style={{width: `${stats.hp}%`}} />
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <div className="p-1.5 rounded bg-black/60 border border-blue-500/30 stat-glow-mp">
-                                        <Sparkles className="w-3 h-3 text-blue-500" />
-                                    </div>
-                                    <div className="h-1.5 w-20 bg-stone-900 rounded-full border border-white/5 overflow-hidden">
+                                    <Sparkles className="w-3 h-3 text-blue-500" />
+                                    <div className="h-1 w-20 bg-stone-900 rounded-full overflow-hidden">
                                         <div className="h-full bg-blue-600 transition-all duration-500" style={{width: `${stats.mp}%`}} />
                                     </div>
                                 </div>
                             </div>
-                            <button onClick={() => { if(audioRef.current) audioRef.current.muted = !isMuted; setIsMuted(!isMuted); }} className="p-2.5 bg-black/60 rounded-lg border border-white/10 backdrop-blur-md">
+                            <button onClick={() => { if(audioRef.current) audioRef.current.muted = !isMuted; setIsMuted(!isMuted); }} className="p-2 bg-black/60 rounded-lg border border-white/10">
                                 {isMuted ? <VolumeX className="w-4 h-4 text-white" /> : <Volume2 className="w-4 h-4 text-white" />}
                             </button>
+                        </div>
+                        <div className="absolute bottom-2 right-4 text-[10px] text-amber-500/50 uppercase tracking-widest font-bold">
+                            Сцена {step + 1} / {STORY_DATA.length}
                         </div>
                     </div>
 
@@ -290,8 +410,8 @@
                                 <span className="text-[10px] text-amber-600 font-bold uppercase tracking-[0.4em]">{current.title}</span>
                             </div>
                             
-                            <p className="text-lg leading-relaxed text-stone-200 italic font-serif text-center px-1 mb-8">
-                                «{current.text}»
+                            <p className="text-base leading-relaxed text-stone-200 italic font-serif text-center px-2 mb-8">
+                                {current.text}
                             </p>
 
                             <div className="space-y-4 mt-auto">
@@ -299,21 +419,19 @@
                                     <button 
                                         key={i} 
                                         onClick={() => handleOption(opt)}
-                                        className="choice-btn p-5 rounded-xl text-left relative overflow-hidden group"
+                                        className="choice-btn p-5 rounded-xl text-left group"
                                     >
-                                        <div className="relative z-10">
-                                            <div className="flex items-center justify-between mb-1">
-                                                <span className="text-[9px] text-amber-700 font-bold uppercase tracking-widest">{opt.label}</span>
-                                                <ChevronRight className="w-3 h-3 text-amber-900 group-hover:text-amber-500 transition-colors" />
-                                            </div>
-                                            <div className="text-amber-50 text-sm group-hover:text-white transition-colors pr-6 leading-snug">{opt.text}</div>
-                                            {opt.cost && (
-                                                <div className="flex gap-4 mt-2 border-t border-white/5 pt-1">
-                                                    {opt.cost.hp > 0 && <span className="text-[9px] text-red-500/80 uppercase font-bold tracking-tighter">Кровь: -{opt.cost.hp}</span>}
-                                                    {opt.cost.mp > 0 && <span className="text-[9px] text-blue-500/80 uppercase font-bold tracking-tighter">Дух: -{opt.cost.mp}</span>}
-                                                </div>
-                                            )}
+                                        <div className="flex items-center justify-between mb-1">
+                                            <span className="text-[9px] text-amber-700 font-bold uppercase tracking-widest">{opt.label}</span>
+                                            <ChevronRight className="w-3 h-3 text-amber-900 group-hover:text-amber-400 transition-colors" />
                                         </div>
+                                        <div className="text-amber-50 text-sm group-hover:text-white transition-colors">{opt.text}</div>
+                                        {opt.cost && (
+                                            <div className="flex gap-4 mt-2 border-t border-white/5 pt-1">
+                                                {opt.cost.hp > 0 && <span className="text-[9px] text-red-500/80 uppercase font-bold">Кровь: -{opt.cost.hp}</span>}
+                                                {opt.cost.mp > 0 && <span className="text-[9px] text-blue-500/80 uppercase font-bold">Дух: -{opt.cost.mp}</span>}
+                                            </div>
+                                        )}
                                     </button>
                                 ))}
                             </div>
