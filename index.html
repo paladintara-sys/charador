@@ -25,57 +25,79 @@
 
         .serif-font { font-family: 'Old Standard TT', serif; }
 
-        .game-container {
-            display: flex; flex-direction: column;
-            height: 100vh; width: 100vw;
+        .game-wrapper {
             position: relative;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
         }
 
-        .image-frame {
-            height: 45vh; width: 100%;
-            position: relative; overflow: hidden;
-            background: #1a1a1a;
+        .background-art {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            transition: opacity 1.5s ease-in-out;
         }
 
-        .content-area {
-            height: 55vh; flex-grow: 1;
-            overflow-y: auto;
-            background: linear-gradient(to bottom, #1a1614, #0a0908);
-            padding-bottom: 40px;
+        .background-art img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .overlay-gradient {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 0%, rgba(10, 9, 8, 0.4) 50%, rgba(10, 9, 8, 0.9) 100%);
+            z-index: 1;
+        }
+
+        .main-ui {
             position: relative;
             z-index: 10;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .glass-panel {
+            background: rgba(10, 9, 8, 0.7);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
         }
 
         .choice-btn {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(243, 208, 106, 0.2);
-            backdrop-filter: blur(12px);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(8px);
+            transition: all 0.3s ease;
         }
 
         .choice-btn:hover {
+            background: rgba(243, 208, 106, 0.15);
             border-color: var(--magic-gold);
-            transform: translateY(-3px);
-            background: rgba(243, 208, 106, 0.1);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            transform: scale(1.02);
         }
 
         .stat-bar {
-            height: 10px; border-radius: 5px;
-            transition: width 1s cubic-bezier(0.65, 0, 0.35, 1);
+            height: 8px; border-radius: 4px;
+            transition: width 1s ease;
         }
 
         .loader-ring {
-            width: 60px; height: 60px;
-            border: 3px solid rgba(243, 208, 106, 0.1);
-            border-top: 3px solid var(--magic-gold);
+            width: 40px; height: 40px;
+            border: 2px solid rgba(243, 208, 106, 0.1);
+            border-top: 2px solid var(--magic-gold);
             border-radius: 50%;
-            animation: spin 1.2s linear infinite;
+            animation: spin 1s linear infinite;
         }
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .text-glow { text-shadow: 0 0 20px rgba(243, 208, 106, 0.4); }
+        .text-glow { text-shadow: 0 0 15px rgba(243, 208, 106, 0.5); }
     </style>
 </head>
 <body>
@@ -85,38 +107,38 @@
         const { useState, useEffect, useCallback } = React;
 
         const Icons = {
-            Heart: () => <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>,
-            Magic: () => <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L9 9l-8 3 8 3 3 8 3-8 8-3-8-3-3-8z"/></svg>,
-            Bermyash: () => <svg className="w-10 h-10 text-orange-400" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" /></svg>,
-            Dryhala: () => <svg className="w-10 h-10 text-blue-300" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg>
+            Heart: () => <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>,
+            Magic: () => <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L9 9l-8 3 8 3 3 8 3-8 8-3-8-3-3-8z"/></svg>,
+            Bermyash: () => <svg className="w-12 h-12 text-orange-400" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" /></svg>,
+            Dryhala: () => <svg className="w-12 h-12 text-blue-300" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg>
         };
 
         const STORY_DATA = [
             {
                 id: 0, title: "Глава I: Пепел Прошлого",
-                text: "Деревня Дремуш объята мистическим пламенем. Фиолетовый туман Смергов медленно вползает в окна домов, стирая воспоминания жителей. Ваша внутренняя сила откликается на крики о помощи.",
-                prompt: "Breathtaking anime scene, Studio Ghibli, a cozy fantasy village with thatched roofs illuminated by soft magical purple fire at night, ethereal mist, cinematic high-angle shot, lush details, vibrant colors.",
+                text: "Деревня Дремуш объята мистическим пламенем. Фиолетовый туман Смергов медленно вползает в окна домов. Ваша внутренняя сила откликается на крики о помощи.",
+                prompt: "Stunning fantasy anime scenery, Makoto Shinkai style, cozy medieval village with thatched roofs at night, glowing purple magical fire, ethereal violet mist, starry sky, cinematic lighting, vibrant colors.",
                 options: [
-                    { text: "Броситься в огонь, прикрывая собой старейшину", change: { hp: -20, mp: +15 }, label: "Путь Сердца" },
-                    { text: "Создать магический барьер, истощив резерв", change: { hp: +10, mp: -30 }, label: "Путь Магии" }
+                    { text: "Броситься в огонь, спасая старейшину", change: { hp: -20, mp: +15 }, label: "Путь Сердца" },
+                    { text: "Создать магический барьер", change: { hp: +10, mp: -30 }, label: "Путь Магии" }
                 ]
             },
             {
                 id: 1, title: "Глава II: Озеро Слез",
                 text: "Серебряное Озеро сковано льдом вопреки лету. В его глубине мерцают тени прошлого. Тьма пытается прорваться сквозь зеркальную гладь.",
-                prompt: "Stunning anime background, Makoto Shinkai style, a vast frozen silver lake reflecting a starry cosmic sky, glowing cracks in the ice, ethereal blue and gold light, highly detailed scenery.",
+                prompt: "Beautiful anime landscape, high quality fantasy background, frozen lake reflecting a cosmic galaxy sky, glowing ice cracks, magical blue light, Studio Ghibli atmosphere, highly detailed.",
                 options: [
-                    { text: "Растопить лед теплом своей души", change: { hp: -25, mp: +40 }, label: "Самопожертвование" },
-                    { text: "Использовать магию холода для защиты", change: { hp: +15, mp: -20 }, label: "Ледяной Щит" }
+                    { text: "Растопить лед теплом души", change: { hp: -25, mp: +40 }, label: "Самопожертвование" },
+                    { text: "Использовать магию холода", change: { hp: +15, mp: -20 }, label: "Ледяной Щит" }
                 ]
             },
             {
                 id: 2, title: "Глава III: Дыхание Мирина",
                 text: "Вы достигли врат древнего града. Стражи-смерги преграждают путь. Только объединив волю и силу, можно зажечь свет надежды.",
-                prompt: "Epic anime concept art, massive ancient wooden gates of a hidden city in a deep forest, magical runes glowing gold, dramatic lighting, fantasy nature, cinematic atmosphere.",
+                prompt: "Epic anime concept art, giant ancient stone gates of a hidden city inside a lush forest, magical gold runes glowing, dramatic sunrise, fantasy nature, cinematic scale.",
                 options: [
-                    { text: "Сразиться в открытую, не щадя сил", change: { hp: -40, mp: +10 }, label: "Ярость" },
-                    { text: "Усыпить стражей тихой мелодией", change: { hp: +5, mp: -35 }, label: "Хитрость" }
+                    { text: "Сразиться в открытую", change: { hp: -40, mp: +10 }, label: "Ярость" },
+                    { text: "Усыпить стражей мелодией", change: { hp: +5, mp: -35 }, label: "Хитрость" }
                 ]
             }
         ];
@@ -139,7 +161,7 @@
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            instances: [{ prompt: `${prompt}, colorful high-quality anime illustration, vibrant fantasy palette, masterpiece` }],
+                            instances: [{ prompt: `${prompt}, high-end digital anime painting, vibrant, masterpiece, 4k resolution` }],
                             parameters: { sampleCount: 1 }
                         })
                     });
@@ -178,118 +200,116 @@
             };
 
             if (gameState === 'char_select') return (
-                <div className="h-screen bg-[#0d0c0b] flex flex-col items-center justify-center p-8 text-center">
-                    <h1 className="text-5xl font-bold text-glow text-amber-100 mb-6 serif-font">Путь Начинается</h1>
-                    <p className="text-stone-400 mb-12 text-lg max-w-sm">Кто возглавит поход против Мага Яха?</p>
+                <div className="h-screen bg-[#0d0c0b] flex flex-col items-center justify-center p-6 text-center">
+                    <h1 className="text-4xl md:text-5xl font-bold text-glow text-amber-100 mb-4 serif-font">Путь Начинается</h1>
+                    <p className="text-stone-400 mb-8 text-sm uppercase tracking-widest">Выберите своего героя</p>
                     
-                    <div className="grid grid-cols-1 gap-10 w-full max-w-md">
-                        <button onClick={() => selectHero('Bermyash')} className="choice-btn p-10 rounded-[2rem] flex flex-col items-center gap-6 group">
+                    <div className="flex flex-col md:flex-row gap-6 w-full max-w-4xl">
+                        <button onClick={() => selectHero('Bermyash')} className="glass-panel flex-1 p-8 rounded-3xl flex flex-col items-center gap-4 transition-transform hover:scale-105">
                             <Icons.Bermyash />
-                            <div className="space-y-2">
-                                <span className="text-3xl font-bold text-amber-200 block">Бермяш</span>
-                                <span className="text-sm text-stone-400 italic block leading-relaxed">Магия в Волшебном Котле. <br/>Несокрушимое здоровье и мощь земли.</span>
-                            </div>
+                            <h2 className="text-2xl font-bold text-amber-200">Бермяш</h2>
+                            <p className="text-sm text-stone-400">Сила Земли. Много здоровья, но мало маны.</p>
                         </button>
                         
-                        <button onClick={() => selectHero('Dryhala')} className="choice-btn p-10 rounded-[2rem] flex flex-col items-center gap-6 group">
+                        <button onClick={() => selectHero('Dryhala')} className="glass-panel flex-1 p-8 rounded-3xl flex flex-col items-center gap-4 transition-transform hover:scale-105">
                             <Icons.Dryhala />
-                            <div className="space-y-2">
-                                <span className="text-3xl font-bold text-amber-200 block">Дрыхала</span>
-                                <span className="text-sm text-stone-400 italic block leading-relaxed">Магия в Волшебной Флейте. <br/>Хрупкая жизнь, но неисчерпаемая мана.</span>
-                            </div>
+                            <h2 className="text-2xl font-bold text-amber-200">Дрыхала</h2>
+                            <p className="text-sm text-stone-400">Дух Ветра. Огромный запас маны, но слабое тело.</p>
                         </button>
                     </div>
                 </div>
             );
 
-            if (gameState === 'gameover') return (
-                <div className="h-screen bg-[#0a0000] flex flex-col items-center justify-center text-center p-10">
-                    <h2 className="text-6xl font-bold text-red-700 mb-8 serif-font">Тьма Победила</h2>
-                    <p className="text-stone-400 text-xl mb-12 max-w-md italic">Ваша песня оборвалась слишком рано...</p>
-                    <button onClick={() => window.location.reload()} className="px-12 py-5 border-2 border-amber-900 text-amber-700 uppercase tracking-[0.4em] font-bold hover:text-amber-400 hover:border-amber-400 transition-all">Вспять</button>
-                </div>
-            );
-
-            if (gameState === 'victory') return (
-                <div className="h-screen bg-[#050505] flex flex-col items-center justify-center text-center p-10">
-                    <h2 className="text-6xl font-bold text-amber-400 mb-8 serif-font">Свет Вернулся</h2>
-                    <p className="text-stone-300 text-xl mb-12 max-w-md">Чарадор спасен. Ваша легенда будет жить вечно.</p>
-                    <button onClick={() => window.location.reload()} className="px-12 py-5 bg-amber-700 text-white uppercase tracking-widest font-bold rounded-xl hover:bg-amber-600 transition-all">В начало</button>
+            if (gameState === 'gameover' || gameState === 'victory') return (
+                <div className={`h-screen flex flex-col items-center justify-center text-center p-10 ${gameState === 'gameover' ? 'bg-[#1a0000]' : 'bg-[#001a00]'}`}>
+                    <h2 className="text-5xl font-bold mb-6 serif-font">{gameState === 'victory' ? 'Свет Вернулся!' : 'Тьма Победила'}</h2>
+                    <p className="text-stone-300 mb-10 max-w-md italic">{gameState === 'victory' ? 'Чарадор спасен. Ваша легенда жива.' : 'Ваше путешествие прервано...'}</p>
+                    <button onClick={() => window.location.reload()} className="px-10 py-4 glass-panel text-amber-200 rounded-xl hover:bg-amber-900 transition-all">В НАЧАЛО</button>
                 </div>
             );
 
             const scene = STORY_DATA[step];
 
             return (
-                <div className="game-container">
-                    <div className="image-frame">
-                        {loadingImg ? (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-stone-900">
-                                <div className="loader-ring mb-6"></div>
-                                <span className="text-sm text-amber-500/60 uppercase tracking-[0.5em] animate-pulse">Рисуем мир...</span>
-                            </div>
+                <div className="game-wrapper">
+                    {/* Фон с артом */}
+                    <div className="background-art">
+                        {image && !loadingImg ? (
+                            <img src={image} alt="Background" />
                         ) : (
-                            <img src={image || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000"} className="w-full h-full object-cover transition-opacity duration-1000" alt="scene" />
+                            <div className="w-full h-full bg-stone-900 flex items-center justify-center">
+                                <div className="loader-ring"></div>
+                            </div>
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#1a1614] via-transparent to-black/30" />
-                        
-                        <div className="absolute top-8 left-8 right-8 flex justify-between items-start">
-                            <div className="bg-black/70 backdrop-blur-2xl p-5 rounded-3xl border border-white/10 space-y-5 shadow-2xl">
-                                <div className="flex items-center gap-5">
-                                    <Icons.Heart className="text-rose-500" />
-                                    <div className="w-40 bg-white/10 rounded-full h-2.5 overflow-hidden">
-                                        <div className="stat-bar bg-gradient-to-r from-rose-700 to-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.5)]" style={{width: `${stats.hp}%`}} />
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-5">
-                                    <Icons.Magic className="text-cyan-400" />
-                                    <div className="w-40 bg-white/10 rounded-full h-2.5 overflow-hidden">
-                                        <div className="stat-bar bg-gradient-to-r from-cyan-700 to-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.5)]" style={{width: `${stats.mp}%`}} />
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div className="bg-amber-500/20 backdrop-blur-xl border-2 border-amber-500/40 px-6 py-3 rounded-2xl flex items-center shadow-2xl">
-                                <span className="text-sm font-bold text-amber-300 tracking-[0.2em] uppercase">{hero === 'Bermyash' ? 'БЕРМЯШ' : 'ДРЫХАЛА'}</span>
-                            </div>
-                        </div>
+                        <div className="overlay-gradient" />
                     </div>
 
-                    <div className="content-area p-10">
-                        <div className="max-w-2xl mx-auto flex flex-col h-full">
-                            <div className="mb-6 text-center">
-                                <span className="text-sm text-amber-500/80 font-bold uppercase tracking-[0.6em]">{scene.title}</span>
+                    <div className="main-ui">
+                        {/* Верхняя панель характеристик */}
+                        <div className="flex justify-between items-center mb-4">
+                            <div className="glass-panel px-4 py-3 rounded-2xl flex flex-col gap-2">
+                                <div className="flex items-center gap-3">
+                                    <Icons.Heart className="text-rose-500" />
+                                    <div className="w-24 md:w-40 bg-white/10 rounded-full h-2 overflow-hidden">
+                                        <div className="stat-bar bg-rose-500" style={{width: `${stats.hp}%`}} />
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <Icons.Magic className="text-cyan-400" />
+                                    <div className="w-24 md:w-40 bg-white/10 rounded-full h-2 overflow-hidden">
+                                        <div className="stat-bar bg-cyan-400" style={{width: `${stats.mp}%`}} />
+                                    </div>
+                                </div>
                             </div>
                             
-                            <div className="bg-white/5 p-8 rounded-[2.5rem] border border-white/5 mb-12 shadow-inner">
-                                <p className="text-2xl leading-relaxed text-stone-100 text-center serif-font italic">
+                            <div className="glass-panel px-4 py-2 rounded-2xl border border-amber-500/30">
+                                <span className="text-[10px] font-bold text-amber-300 uppercase tracking-widest">{hero === 'Bermyash' ? 'Бермяш' : 'Дрыхала'}</span>
+                            </div>
+                        </div>
+
+                        {/* Контент главы */}
+                        <div className="flex-1 flex flex-col justify-center max-w-3xl mx-auto w-full">
+                            <div className="text-center mb-4">
+                                <span className="text-xs text-amber-400/80 font-bold uppercase tracking-[0.4em]">{scene.title}</span>
+                            </div>
+                            
+                            <div className="glass-panel p-6 md:p-10 rounded-[2rem] mb-8">
+                                <p className="text-xl md:text-2xl leading-relaxed text-stone-100 text-center serif-font italic">
                                     "{scene.text}"
                                 </p>
                             </div>
 
-                            <div className="space-y-5 mt-auto">
+                            <div className="grid grid-cols-1 gap-4">
                                 {scene.options.map((opt, i) => (
-                                    <button key={i} onClick={() => handleChoice(opt)} className="choice-btn w-full p-8 rounded-3xl text-left relative overflow-hidden group">
-                                        <div className="flex items-center justify-between mb-3">
-                                            <span className="text-xs text-amber-500 font-bold uppercase tracking-widest">{opt.label}</span>
-                                            <div className="flex gap-6">
-                                                {opt.change.hp !== 0 && (
-                                                    <span className={`text-sm font-bold ${opt.change.hp > 0 ? 'text-green-400' : 'text-rose-500'}`}>
-                                                        ЖИЗНЬ {opt.change.hp > 0 ? '▲' : '▼'}
-                                                    </span>
-                                                )}
-                                                {opt.change.mp !== 0 && (
-                                                    <span className={`text-sm font-bold ${opt.change.mp > 0 ? 'text-cyan-400' : 'text-amber-600'}`}>
-                                                        МАГИЯ {opt.change.mp > 0 ? '▲' : '▼'}
-                                                    </span>
-                                                )}
-                                            </div>
+                                    <button key={i} onClick={() => handleChoice(opt)} className="choice-btn p-5 md:p-6 rounded-2xl text-left flex flex-col md:flex-row md:items-center justify-between group">
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] text-amber-500 font-bold uppercase mb-1">{opt.label}</span>
+                                            <span className="text-lg text-stone-100 group-hover:text-amber-200 transition-colors">{opt.text}</span>
                                         </div>
-                                        <div className="text-stone-100 text-xl group-hover:text-amber-200 transition-colors font-medium">{opt.text}</div>
+                                        <div className="flex gap-4 mt-2 md:mt-0">
+                                            {opt.change.hp !== 0 && (
+                                                <span className={`text-[10px] font-bold ${opt.change.hp > 0 ? 'text-green-400' : 'text-rose-400'}`}>
+                                                    HP {opt.change.hp > 0 ? '▲' : '▼'}
+                                                </span>
+                                            )}
+                                            {opt.change.mp !== 0 && (
+                                                <span className={`text-[10px] font-bold ${opt.change.mp > 0 ? 'text-cyan-400' : 'text-amber-500'}`}>
+                                                    MP {opt.change.mp > 0 ? '▲' : '▼'}
+                                                </span>
+                                            )}
+                                        </div>
                                     </button>
                                 ))}
                             </div>
                         </div>
+                        
+                        {/* Индикатор загрузки арта снизу */}
+                        {loadingImg && (
+                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 opacity-50">
+                                <div className="w-2 h-2 bg-amber-500 rounded-full animate-bounce"></div>
+                                <span className="text-[10px] uppercase tracking-widest">Видение проясняется...</span>
+                            </div>
+                        ) }
                     </div>
                 </div>
             );
