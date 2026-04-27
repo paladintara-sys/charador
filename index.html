@@ -1,2 +1,196 @@
-git clone [https://github.com/ваш-логин/charador-bot.git](https://github.com/ваш-логин/charador-bot.git)
-pip install python-telegram-bot
+import React, { useState, useEffect } from 'react';
+
+const App = () => {
+  const [gameState, setGameState] = useState('START'); // START, CHARACTER_SELECT, PLAYING, GAME_OVER
+  const [hero, setHero] = useState(null);
+  const [spark, setSpark] = useState(100);
+  const [chapter, setChapter] = useState(1);
+  const [inventory, setInventory] = useState([]);
+  const [log, setLog] = useState([]);
+
+  // Контент глав
+  const chapters = {
+    1: {
+      title: "Тень на террасе",
+      text: "Вечер в Дремуше был наполнен ароматом жасминового чая и теплой корицы. Но внезапно луна погасла. Ты чувствуешь, как холод Калта покалывает кожу сквозь шерстяную жилетку. Чай в чашке мгновенно покрывается коркой льда. Из тумана у реки Чаруши выплывают Смерги — безликие башни из копоти, пахнущие озоном и сталью.",
+      options: [
+        {
+          label: "Использовать магию Фа (Латар/Котел)",
+          effect: () => {
+            setSpark(prev => Math.max(0, prev - 15));
+            addLog("Ты направляешь чистую энергию Фа. Тьма шипит и отступает, но ты чувствуешь, как часть твоей искры угасла.");
+            nextChapter();
+          }
+        },
+        {
+          label: "Спрятаться в корнях Мирина",
+          effect: () => {
+            addLog("Ты ныряешь в глубокую нору. Тень проходит мимо, но страх ледяным комом оседает в груди.");
+            nextChapter();
+          }
+        }
+      ]
+    },
+    2: {
+      title: "Плюшки под пеплом",
+      text: "Твой дом теперь кажется чужим. Любимые плюшки на столе превратились в серый прах. Воздух пахнет горелой пылью. Нужно спешить к Обережному мосту, пока туман не скрыл тропу полностью.",
+      options: [
+        {
+          label: "Забрать памятный амулет дома",
+          effect: () => {
+            setInventory(prev => [...prev, "Амулет Дома"]);
+            addLog("Ты тратишь время, чтобы спасти частичку прошлого. Тьма подбирается ближе.");
+            setSpark(prev => Math.max(0, prev - 5));
+            nextChapter();
+          }
+        },
+        {
+          label: "Бежать к мосту без оглядки",
+          effect: () => {
+            addLog("Сердце стучит в ушах, как огромный барабан. Ты успеваешь до того, как тропа исчезла.");
+            nextChapter();
+          }
+        }
+      ]
+    }
+    // Здесь можно добавлять главы до 10-й
+  };
+
+  const addLog = (msg) => {
+    setLog(prev => [msg, ...prev].slice(0, 5));
+  };
+
+  const nextChapter = () => {
+    if (chapter < 10 && chapters[chapter + 1]) {
+      setChapter(prev => prev + 1);
+    } else if (chapter >= 2) { // Пока у нас только 2 главы для примера
+       setGameState('GAME_OVER');
+    }
+  };
+
+  const selectHero = (type) => {
+    setHero(type);
+    setInventory(type === 'Дрыхала' ? ['Латар'] : ['Волшебный Котел']);
+    setGameState('PLAYING');
+  };
+
+  if (spark <= 0) {
+    return (
+      <div className="min-h-screen bg-black text-blue-200 flex flex-col items-center justify-center p-8 text-center">
+        <h1 className="text-4xl font-serif mb-4">Вечный Сон</h1>
+        <p className="max-w-md italic">Твоя Искра угасла. Тень Калта поглотила тебя, оставив лишь холодную пустоту.</p>
+        <button onClick={() => window.location.reload()} className="mt-8 px-6 py-2 border border-blue-500 rounded hover:bg-blue-900 transition">Попробовать снова</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans p-4 md:p-8 flex flex-col items-center">
+      <div className="max-w-2xl w-full bg-slate-800 rounded-2xl shadow-2xl overflow-hidden border border-slate-700">
+        
+        {/* Header Stats */}
+        {gameState === 'PLAYING' && (
+          <div className="bg-slate-950 p-4 flex justify-between items-center border-b border-slate-700 text-sm">
+            <div className="flex items-center gap-2">
+              <span className="text-slate-400">Герой:</span>
+              <span className="font-bold text-amber-400 uppercase tracking-wider">{hero}</span>
+            </div>
+            <div className="flex flex-col items-end">
+              <div className="flex items-center gap-2">
+                <span className="text-slate-400">Искра Живи:</span>
+                <span className={`font-bold ${spark < 30 ? 'text-red-500 animate-pulse' : 'text-emerald-400'}`}>{spark}%</span>
+              </div>
+              <div className="w-32 h-1.5 bg-slate-700 rounded-full mt-1 overflow-hidden">
+                <div className="h-full bg-emerald-500 transition-all duration-500" style={{ width: `${spark}%` }}></div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Main View */}
+        <div className="p-6 md:p-10 min-h-[400px] flex flex-col justify-center">
+          {gameState === 'START' && (
+            <div className="text-center animate-in fade-in duration-1000">
+              <h1 className="text-5xl font-serif mb-6 text-amber-100">Чарадор</h1>
+              <p className="text-slate-400 mb-8 italic">Интерактивное приключение в мире 30-сантиметровых существ</p>
+              <button 
+                onClick={() => setGameState('CHARACTER_SELECT')}
+                className="px-10 py-4 bg-amber-600 hover:bg-amber-500 rounded-lg font-bold transition-transform hover:scale-105 active:scale-95 shadow-lg shadow-amber-900/20"
+              >
+                Начать странствие
+              </button>
+            </div>
+          )}
+
+          {gameState === 'CHARACTER_SELECT' && (
+            <div className="animate-in slide-in-from-bottom-4 duration-500">
+              <h2 className="text-2xl font-serif text-center mb-8">Выберите своего героя</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <button onClick={() => selectHero('Дрыхала')} className="group p-6 bg-slate-700/50 rounded-xl border border-slate-600 hover:border-amber-500 transition-all text-left">
+                  <h3 className="text-xl font-bold text-amber-400 mb-2 group-hover:translate-x-1 transition-transform tracking-tight">🎶 Дрыхала</h3>
+                  <p className="text-sm text-slate-300">Мастер звука. Владеет Латаром. Чувствует вибрации Фа и резонанс мира.</p>
+                </button>
+                <button onClick={() => selectHero('Бермяш')} className="group p-6 bg-slate-700/50 rounded-xl border border-slate-600 hover:border-amber-500 transition-all text-left">
+                  <h3 className="text-xl font-bold text-amber-400 mb-2 group-hover:translate-x-1 transition-transform tracking-tight">🍯 Бермяш</h3>
+                  <p className="text-sm text-slate-300">Хранитель уюта. Владеет Волшебным Котлом. Создает зоны тепла и защиты.</p>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {gameState === 'PLAYING' && (
+            <div className="animate-in fade-in duration-700">
+              <div className="mb-2 text-xs font-bold text-amber-600 uppercase tracking-widest">Глава {chapter}: {chapters[chapter].title}</div>
+              <div className="text-lg leading-relaxed text-slate-200 mb-8 font-serif italic border-l-2 border-amber-500/30 pl-6 py-2">
+                "{chapters[chapter].text}"
+              </div>
+              
+              <div className="space-y-3">
+                {chapters[chapter].options.map((opt, i) => (
+                  <button 
+                    key={i}
+                    onClick={opt.effect}
+                    className="w-full p-4 bg-slate-700 hover:bg-slate-600 rounded-lg text-left transition-colors flex justify-between items-center group"
+                  >
+                    <span>{opt.label}</span>
+                    <span className="opacity-0 group-hover:opacity-100 transition-opacity text-amber-400">→</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Action Log */}
+              {log.length > 0 && (
+                <div className="mt-10 pt-6 border-t border-slate-700">
+                  <h4 className="text-xs font-bold text-slate-500 uppercase mb-3">Последние события</h4>
+                  {log.map((msg, i) => (
+                    <div key={i} className="text-sm text-slate-400 mb-1 animate-in slide-in-from-left-2 opacity-80">• {msg}</div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {gameState === 'GAME_OVER' && (
+            <div className="text-center">
+              <h2 className="text-3xl font-serif text-amber-400 mb-4">Конец первой части</h2>
+              <p className="text-slate-300 mb-8">Ты успешно прошел испытания в Дремуше. Тьма отступила, но это лишь начало пути в Хе́льгар.</p>
+              <div className="bg-slate-900/50 p-4 rounded-lg mb-8 text-left text-sm">
+                <div className="text-slate-500 uppercase text-[10px] mb-2">Итоги похода:</div>
+                <div>Искра: {spark}%</div>
+                <div>Инвентарь: {inventory.join(', ')}</div>
+              </div>
+              <button onClick={() => window.location.reload()} className="text-amber-500 hover:underline underline-offset-4">Начать заново</button>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Footer info */}
+      <div className="mt-8 text-slate-600 text-[10px] uppercase tracking-[0.2em]">
+        Мир Чарадор • Алварина Хель • Тьма Калта
+      </div>
+    </div>
+  );
+};
+
+export default App;
