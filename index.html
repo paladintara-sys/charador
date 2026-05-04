@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Летопись Тарры</title>
+    <style>
+        body { font-family: 'Georgia', serif; background: #0f0f0f; color: #d1d1d1; margin: 0; padding: 0; overflow-x: hidden; }
+        .header { background: #1a1a1a; padding: 20px; text-align: center; border-bottom: 2px solid #d4af37; }
+        h1 { color: #d4af37; margin: 0; font-size: 1.4em; text-transform: uppercase; letter-spacing: 2px; }
+        
+        /* Контейнер меню */
+        #main-menu { padding: 15px; display: block; }
+        .menu-btn { 
+            background: #1a1a1a; border: 1px solid #444; color: #d4af37;
+            padding: 15px; margin: 8px 0; border-radius: 4px;
+            text-align: center; cursor: pointer; display: block; font-weight: bold;
+            transition: 0.3s;
+        }
+        .menu-btn:active { background: #d4af37; color: #000; }
+
+        /* Контейнер контента */
+        #content-viewer { display: none; padding: 20px; min-height: 100vh; }
+        .back-btn { color: #d4af37; text-decoration: underline; cursor: pointer; margin-bottom: 20px; display: inline-block; }
+        .article-title { color: #d4af37; font-size: 1.5em; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .article-body { line-height: 1.7; font-size: 1.1em; }
+    </style>
+</head>
+<body>
+
+    <div id="main-page">
+        <div class="header">
+            <h1>Летопись Тарры</h1>
+            <p style="font-style: italic; color: #888; font-size: 0.9em;">Мир славяно-уральского эпоса «Чарадор»</p>
+        </div>
+
+        <div id="main-menu">
+            <div class="menu-btn" onclick="openArticle('Основы Тарры', 'Здесь будет текст про основы вашего мира и Резонанс...')">Основы Тарры</div>
+            <div class="menu-btn" onclick="openArticle('Лады первого поколения', 'Описание первых божеств или сил вашего мира...')">Лады первого поколения</div>
+            <div class="menu-btn" onclick="openArticle('Структура Девятимирья', 'Детальное описание девяти миров вашей вселенной...')">Структура Девятимирья</div>
+            <div class="menu-btn" onclick="openArticle('Народы Тарры', 'Описание людей, Дрем и других рас...')">Народы Тарры</div>
+            <div class="menu-btn" onclick="openArticle('Бестиарий', 'Ваши уникальные существа, вдохновленные фольклором Урала...')">Бестиарий</div>
+            <div class="menu-btn" onclick="openArticle('Артефакты и технологии', 'Музыкальные инструменты как артефакты и система Резонанса...')">Артефакты и технологии</div>
+        </div>
+    </div>
+
+    <div id="content-viewer">
+        <div class="back-btn" onclick="closeArticle()">← Назад в меню</div>
+        <div id="article-content">
+            <h2 class="article-title" id="display-title"></h2>
+            <div class="article-body" id="display-text"></div>
+        </div>
+    </div>
+
+    <script>
+        function openArticle(title, text) {
+            // Скрываем всё главное меню (плашку)
+            document.getElementById('main-page').style.display = 'none';
+            // Показываем экран чтения
+            document.getElementById('content-viewer').style.display = 'block';
+            
+            document.getElementById('display-title').innerText = title;
+            document.getElementById('display-text').innerText = text;
+            
+            // Прокрутка вверх
+            window.scrollTo(0, 0);
+        }
+
+        function closeArticle() {
+            // Возвращаем меню
+            document.getElementById('main-page').style.display = 'block';
+            // Скрываем чтение
+            document.getElementById('content-viewer').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
