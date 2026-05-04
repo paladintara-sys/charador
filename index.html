@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Энциклопедия Чарадора</title>
+    <style>
+        :root {
+            --emerald-main: #2ecc71;
+            --emerald-dark: #27ae60;
+            --bg-color: #f9fbf9;
+            --text-color: #2c3e50;
+            --card-bg: #ffffff;
+            --border-color: #e0e6e0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 2px solid var(--emerald-main);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            margin: 0;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .nav-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            background: none;
+            border: 1px solid var(--emerald-main);
+            color: var(--emerald-dark);
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover, .btn.active {
+            background-color: var(--emerald-main);
+            color: white;
+            border-color: var(--emerald-main);
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--emerald-main);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: var(--emerald-dark);
+            font-size: 1.2rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #95a5a6;
+            margin-top: 50px;
+            padding-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Энциклопедия Чарадора</h1>
+    </header>
+
+    <div class="nav-buttons">
+        <button class="btn active" onclick="showSection('cosmology')">Космогония</button>
+        <button class="btn" onclick="showSection('geography')">География</button>
+        <button class="btn" onclick="showSection('forests')">Семилесье</button>
+        <button class="btn" onclick="showSection('peoples')">Народы</button>
+        <button class="btn" onclick="showSection('threats')">Угрозы</button>
+    </div>
+
+    <!-- КОСМОГОНИЯ -->
+    <div id="cosmology" class="content-section active">
+        <div class="card">
+            <h3>Тарра (Вэдхильм)</h3>
+            <p>Мультивселенная — Древо Жизни из 27 миров, разделенных на Долые, Серединные и Высокие[cite: 1].</p>
+        </div>
+        <div class="card">
+            <h3>Тар</h3>
+            <p>Разумный магический Кристалл, сердце и исток всего живого[cite: 1].</p>
+        </div>
+        <div class="card">
+            <h3>Фар (Живь)</h3>
+            <p>Разумная жизненная сила, исходящая из Кристалла[cite: 1].</p>
+        </div>
+    </div>
+
+    <!-- ГЕОГРАФИЯ -->
+    <div id="geography" class="content-section">
+        <div class="card">
+            <h3>Чудолесье</h3>
+            <p>Центральный регион Чарадора, хранящий частицы всех миров[cite: 1].</p>
+        </div>
+        <div class="card">
+            <h3>Верам</h3>
+            <p>Северный Город Мастеров, где строят летучие ладьяры[cite: 1].</p>
+        </div>
+        <div class="card">
+            <h3>Еленор</h3>
+            <p>Южный город на утёсе, прибежище прирученных белых сов — сиринов[cite: 1].</p>
+        </div>
+    </div>
+
+    <!-- СЕМИЛЕСЬЕ -->
+    <div id="forests" class="content-section">
+        <div class="card">
+            <h3>Дремобор</h3>
+            <p>Священный хвойный лес, место рождения народа дрём у Серебряного озера[cite: 1].</p>
+        </div>
+        <div class="card">
+            <h3>Дубрава Радогаса</h3>
+            <p>Величественный лес, охраняемый элфарами в облике гигантских котов.</p>
+        </div>
+        <div class="card">
+            <h3>Мшистый Хмуролес</h3>
+            <p>Влажный край мхов, где фиты ухаживают за корнями деревьев[cite: 1].</p>
+        </div>
+        <div class="card">
+            <h3>Кипреев Стан</h3>
+            <p>Лес бо́ренов, наполненный ароматом мёда и защитной магией.</p>
+        </div>
+    </div>
+
+    <!-- НАРОДЫ -->
+    <div id="peoples" class="content-section">
+        <div class="card">
+            <h3>Первое Творение (Элфары)</h3>
+            <p>Существа, рожденные напрямую из Древа Жизни. К ним относятся Алварины, Фавии и Урфары[cite: 1].</p>
+        </div>
+        <div class="card">
+            <h3>Тарфии</h3>
+            <p>Малые магические существа: Дрёмы, Сильвы, Фиты, Пичи[cite: 1].</p>
+        </div>
+        <div class="card">
+            <h3>Раса Чудь (Малоны)</h3>
+            <p>Мастеровые народы: Ланы, Чуры, Памы[cite: 1].</p>
+        </div>
+    </div>
+
+    <!-- УГРОЗЫ -->
+    <div id="threats" class="content-section">
+        <div class="card">
+            <h3>Смерги (Морок)</h3>
+            <p>Дети Бездны, паразиты магии, заточенные в мире Камора[cite: 1].</p>
+        </div>
+        <div class="card">
+            <h3>Кан (Kán)</h3>
+            <p>Болезненный разрыв связи с гармонией миров, ведущий к мутациям[cite: 1].</p>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 Мир Чарадора. Автор: Григорий Баринов.
+    </footer>
+</div>
+
+<script>
+    function showSection(sectionId) {
+        // Скрываем все секции
+        const sections = document.querySelectorAll('.content-section');
+        sections.forEach(s => s.classList.remove('active'));
+
+        // Убираем активный класс у кнопок
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(b => b.classList.remove('active'));
+
+        // Показываем нужную секцию
+        document.getElementById(sectionId).classList.add('active');
+
+        // Делаем нажатую кнопку активной
+        event.currentTarget.classList.add('active');
+    }
+</script>
+
+</body>
+</html>
